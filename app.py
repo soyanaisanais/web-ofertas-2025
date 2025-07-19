@@ -1,33 +1,38 @@
-from flask import Flask, jsonify
-from flask_cors import CORS
-from pymongo import MongoClient
+from flask import Flask, render_template, jsonify
 import os
+from pymongo import MongoClient
 
-# Inicializar Flask
 app = Flask(__name__)
-CORS(app)
 
-# Leer las variables de entorno
-mongo_uri = os.environ.get("MONGO_URI")
-db_name = os.environ.get("DATABASE_NAME")
-collection_name = os.environ.get("COLLECTION_NAME")
+# Cargar configuración desde variables de entorno
+MONGO_URI = os.getenv("MONGO_URI")
+DB_NAME = os.getenv("DATABASE_NAME", "amazon")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME", "productos")
 
-# Conexión a MongoDB
-cliente = MongoClient(mongo_uri)
-db = cliente[db_name]
-coleccion = db[collection_name]
+# Conexión a MongoDB Atlas
+client = MongoClient(MONGO_URI)
+db = client[DB_NAME]
+collection = db[COLLECTION_NAME]
 
-# Ruta principal
+# Página principal
 @app.route('/')
-def inicio():
-    return "🚀 Web de ofertas activa y funcionando correctamente."
+def index():
+    return render_template("index.html")
 
-# Ruta para obtener las ofertas
-@app.route('/ofertas')
-def obtener_ofertas():
-    datos = list(coleccion.find({}, {"_id": 0}))  # Excluye el _id
-    return jsonify(datos)
+# API para cada categoría
+@app.route('/api/<categoria>')
+def get_categoria(categoria):
+    doc = collection.find_one({"categoria": categoria})
+    if doc:
+        return jsonify({
+            "texto": doc.get("texto", ""),
+            "extras": doc.get("extras", [])
+        })
+    return jsonify({
+        "texto": "Sin datos",
+        "extras": []
+    })
 
-# Iniciar servidor (solo en local)
+# Iniciar si se ejecuta localmente
 if __name__ == '__main__':
     app.run(debug=True)
