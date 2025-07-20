@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, jsonify, render_template
 from pymongo import MongoClient
 from datetime import datetime
 import os
@@ -19,11 +19,12 @@ def general():
     try:
         datos = list(db["Ultimas_Ofertas"].find().sort("fecha", -1).limit(6))
         return jsonify([{
+            "_id": str(d["_id"]),
             "titulo": d.get("titulo", "Sin título"),
             "precio": d.get("precio", "?"),
             "descuento": d.get("descuento", 0),
             "url": d.get("url", "#"),
-            "imagen": d.get("imagen", "/static/placeholder.jpg"),
+            "imagen": d.get("imagen", ""),
             "fecha": str(d.get("fecha", ""))
         } for d in datos])
     except Exception as e:
@@ -34,11 +35,12 @@ def electronica():
     try:
         datos = list(db["publicados_electronica"].find().sort("fecha", -1).limit(6))
         return jsonify([{
+            "_id": str(d["_id"]),
             "titulo": d.get("titulo", "Sin título"),
             "precio": d.get("precio", "?"),
             "descuento": d.get("descuento", 0),
             "url": d.get("url", "#"),
-            "imagen": d.get("imagen", "/static/placeholder.jpg"),
+            "imagen": d.get("imagen", ""),
             "fecha": str(d.get("fecha", ""))
         } for d in datos])
     except Exception as e:
@@ -49,11 +51,12 @@ def deportes():
     try:
         datos = list(db["publicados_deports"].find().sort("fecha", -1).limit(6))
         return jsonify([{
+            "_id": str(d["_id"]),
             "titulo": d.get("titulo", "Sin título"),
             "precio": d.get("precio", "?"),
             "descuento": d.get("descuento", 0),
             "url": d.get("url", "#"),
-            "imagen": d.get("imagen", "/static/placeholder.jpg"),
+            "imagen": d.get("imagen", ""),
             "fecha": str(d.get("fecha", ""))
         } for d in datos])
     except Exception as e:
