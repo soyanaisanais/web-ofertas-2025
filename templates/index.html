@@ -28,10 +28,9 @@
       border-radius: 20px;
       background: linear-gradient(145deg, #fff6b0, #ffd700);
     }
-    .sections {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 25px;
       padding: 40px 20px;
       background-color: #eee;
@@ -40,7 +39,7 @@
       background: #f9f9f9;
       border-radius: 12px;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-      width: 320px;
+      width: 100%;
       padding: 25px;
       border: 1px solid #ccc;
       color: #111;
@@ -139,8 +138,8 @@
       text-align: center;
     }
     @media (max-width: 768px) {
-      .card {
-        width: 90%;
+      .card-container {
+        grid-template-columns: 1fr;
       }
       .title-3d {
         font-size: 2em;
@@ -154,7 +153,7 @@
     <h1 class="title-3d">Chollos 2025</h1>
   </header>
 
-  <div class="sections">
+  <div class="card-container">
     <div class="card">
       <h2>Chollos 2025</h2>
       <div id="general" class="cargando">Cargando...</div>
@@ -178,12 +177,12 @@
   </footer>
 
   <script>
-    // Función para mostrar imágenes o placeholder
+    // Función para mostrar imágenes con placeholder si fallan
     function mostrarImagen(url, titulo) {
-      if (!url || url.trim() === "") {
-        return `<div style="background:#f5f5f5;height:200px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid #ddd;color:#999">Imagen no disponible</div>`;
+      if (!url || !url.startsWith('http')) {
+        return '<div style="background:#f5f5f5;height:200px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid #ddd;color:#999">Imagen no disponible</div>';
       }
-      return `<img src="${url}" alt="${titulo}" style="max-width:100%;height:200px;object-fit:contain;border-radius:10px;border:1px solid #ddd;" onerror="this.onerror=null;this.parentElement.innerHTML='<div style=background:#f5f5f5;height:200px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid #ddd;color:#999>Error cargando imagen</div>'">`;
+      return `<img src="${url}" alt="${titulo}" style="max-width:100%;height:200px;object-fit:contain;border-radius:10px;border:1px solid #ddd;" onerror="this.src='https://via.placeholder.com/300?text=Error+imagen'">`;
     }
 
     // Función principal para cargar ofertas
@@ -201,24 +200,19 @@
             continue;
           }
 
-          if (cat === 'general') {
-            contenedor.innerHTML = data.map(oferta => `
-              <div class="oferta">
-                ${mostrarImagen(oferta.imagen, oferta.titulo)}
-                <h3>${oferta.titulo}</h3>
-                <p>${oferta.precio} <span style="color:green">(-${oferta.descuento}%)</span></p>
-                <a href="${oferta.url}" target="_blank">Ver oferta</a>
-              </div>
-            `).join('');
-          } else {
-            contenedor.innerHTML = `
-              <div class="oferta">
-                ${mostrarImagen(data[0].imagen, data[0].titulo)}
-                <h3>${data[0].titulo}</h3>
-                <p>${data[0].precio} <span style="color:green">(-${data[0].descuento}%)</span></p>
-                <a href="${data[0].url}" target="_blank">Ver oferta</a>
-              </div>
-              <div class="extra" id="extra-${cat}" style="display:none;">
+          // Primer producto siempre visible
+          let html = `
+            <div class="oferta">
+              ${mostrarImagen(data[0].imagen, data[0].titulo)}
+              <h3>${data[0].titulo}</h3>
+              <p>${data[0].precio} <span style="color:green">(-${data[0].descuento}%)</span></p>
+              <a href="${data[0].url}" target="_blank">Ver oferta</a>
+            </div>`;
+
+          // Productos adicionales (ocultos)
+          if (data.length > 1) {
+            html += `
+              <div class="extra" id="extra-${cat}">
                 ${data.slice(1).map(oferta => `
                   <div class="oferta">
                     ${mostrarImagen(oferta.imagen, oferta.titulo)}
@@ -237,22 +231,22 @@
                 document.getElementById('extra-${cat}').style.display='none';
                 this.style.display='none';
                 document.querySelector('#${cat} .ver-mas').style.display='block';
-              " style="display:none;">Ver menos</button>
-            `;
+              " style="display:none;">Ver menos</button>`;
           }
+
+          contenedor.innerHTML = html;
         } catch (e) {
           console.error(`Error en ${cat}:`, e);
           document.getElementById(cat).innerHTML = `
             <p class="error">Error al cargar ofertas</p>
-            <button onclick="cargarOfertas()">Reintentar</button>
-          `;
+            <button onclick="cargarOfertas()">Reintentar</button>`;
         }
       }
     }
 
-    // Actualizar cada 15 segundos
+    // Iniciar carga y actualizar cada 30 segundos
     window.onload = cargarOfertas;
-    setInterval(cargarOfertas, 15000);
+    setInterval(cargarOfertas, 30000);
   </script>
 </body>
 </html>
