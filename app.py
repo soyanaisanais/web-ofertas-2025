@@ -57,13 +57,17 @@ def get_deportes():
 def render_oferta(doc):
     return f"""
     <div style='text-align:center'>
-      <img src="{doc.get('imagen', '') or doc.get('img', '')}" alt="Imagen" style="width:100px"><br>
+      <img src="{doc.get('imagen', '')}" alt="Imagen" style="width:100px"><br>
       <strong>{doc.get('titulo', '')}</strong><br>
       {doc.get('precio', '')} <span style='color:green'>(-{doc.get('descuento', 0)}%)</span><br>
       <a href="{doc.get('url', '#')}" target="_blank">Ver oferta</a>
     </div>
     <hr>
     """
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
