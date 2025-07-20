@@ -1,49 +1,63 @@
-from flask import Flask, render_template, jsonify, send_from_directory
+from flask import Flask, render_template, jsonify
 from pymongo import MongoClient
+from datetime import datetime
 import os
 
-app = Flask(__name__, static_folder='static', template_folder='templates')
+app = Flask(__name__)
 
-# Conexión MongoDB (tus credenciales)
+# Conexión a MongoDB (tus credenciales ya integradas)
 MONGO_URI = "mongodb+srv://soyanaisanais:Eduardo1981@cluster0.yaamkjc.mongodb.net/Chollos_2025?retryWrites=true&w=majority"
 client = MongoClient(MONGO_URI)
 db = client["Chollos_2025"]
 
-# Ruta para archivos estáticos (CSS/JS/imágenes)
-@app.route('/static/<path:filename>')
-def static_files(filename):
-    return send_from_directory(app.static_folder, filename)
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-# Rutas API
 @app.route('/api/general')
-def api_general():
-    return obtener_ofertas("Ultimas_Ofertas")
-
-@app.route('/api/electronica')
-def api_electronica():
-    return obtener_ofertas("publicados_electronica")
-
-@app.route('/api/deportes')
-def api_deportes():
-    return obtener_ofertas("publicados_deports")
-
-def obtener_ofertas(coleccion):
+def general():
     try:
-        datos = list(db[coleccion].find().limit(6))
+        datos = list(db["Ultimas_Ofertas"].find().sort("fecha", -1).limit(6))
         return jsonify([{
-            "titulo": d.get("titulo", ""),
-            "precio": d.get("precio", ""),
+            "titulo": d.get("titulo", "Sin título"),
+            "precio": d.get("precio", "?"),
             "descuento": d.get("descuento", 0),
             "url": d.get("url", "#"),
-            "imagen": d.get("imagen", "")
+            "imagen": d.get("imagen", "/static/placeholder.jpg"),
+            "fecha": str(d.get("fecha", ""))
         } for d in datos])
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Ruta principal
-@app.route('/')
-def home():
-    return render_template('index.html')
+@app.route('/api/electronica')
+def electronica():
+    try:
+        datos = list(db["publicados_electronica"].find().sort("fecha", -1).limit(6))
+        return jsonify([{
+            "titulo": d.get("titulo", "Sin título"),
+            "precio": d.get("precio", "?"),
+            "descuento": d.get("descuento", 0),
+            "url": d.get("url", "#"),
+            "imagen": d.get("imagen", "/static/placeholder.jpg"),
+            "fecha": str(d.get("fecha", ""))
+        } for d in datos])
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/deportes')
+def deportes():
+    try:
+        datos = list(db["publicados_deports"].find().sort("fecha", -1).limit(6))
+        return jsonify([{
+            "titulo": d.get("titulo", "Sin título"),
+            "precio": d.get("precio", "?"),
+            "descuento": d.get("descuento", 0),
+            "url": d.get("url", "#"),
+            "imagen": d.get("imagen", "/static/placeholder.jpg"),
+            "fecha": str(d.get("fecha", ""))
+        } for d in datos])
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
