@@ -5,15 +5,21 @@ from bson.json_util import dumps
 
 app = Flask(__name__)
 
-# Carga variables de entorno para MongoDB
-MONGO_URI = os.getenv("MONGO_URI")
-DB_NAME = os.getenv("DATABASE_NAME", "Chollos_2025")
-COLLECTION_NAME = os.getenv("COLLECTION_NAME", "Ultimas_Ofertas")
+# Configuración de MongoDB
+MONGO_URI = os.getenv("MONGO_URI") or "mongodb+srv://soyanaisanais:Eduardo1981@cluster0.yaamkjc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+DB_NAME = "Chollos_2025"
+COLLECTION_NAME = "Ultimas_Ofertas"
 
-# Conexión a MongoDB
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 collection = db[COLLECTION_NAME]
+
+# 🔁 Solo una vez: convierte 'img' en 'imagen'
+if collection.count_documents({"img": {"$exists": True}}) > 0:
+    collection.update_many(
+        {"img": {"$exists": True}},
+        [{"$set": {"imagen": "$img"}}, {"$unset": "img"}]
+    )
 
 @app.route('/')
 def index():
@@ -34,3 +40,4 @@ def get_general():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
