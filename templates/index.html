@@ -84,13 +84,16 @@
       border-radius: 5px;
       font-weight: bold;
     }
-    .ver-mas, .ver-menos {
+    .ver-mas {
       display: block;
       text-align: center;
       margin-top: 15px;
       color: #1e90ff;
       font-weight: bold;
       cursor: pointer;
+      background: none;
+      border: none;
+      padding: 5px;
     }
     .extra {
       display: none;
@@ -154,7 +157,7 @@
   </div>
 
   <footer>
-    Esta es una página de afiliados. No vendemos productos directamente. Las ofertas y ventas pertenecen a terceros.
+    Esta es una página de afiliados. No vendemos productos directamente.
   </footer>
 
   <script>
@@ -162,21 +165,20 @@
       const categorias = ['general', 'electronica', 'deportes'];
       
       for (let cat of categorias) {
+        const contenedor = document.getElementById(cat);
         try {
-          const contenedor = document.getElementById(cat);
           const res = await fetch(`/api/${cat}`);
-          
-          if (!res.ok) throw new Error(`Error ${res.status}`);
-          
           const data = await res.json();
-          console.log(`${cat}:`, data);  // Para debug
+          
+          // Debug: Ver datos en consola (presiona F12 > Console)
+          console.log(`${cat}:`, data);
 
-          if (!data || data.length === 0) {
-            contenedor.innerHTML = '<p class="error">No hay ofertas disponibles</p>';
+          if (data.error || !data.length) {
+            contenedor.innerHTML = `<p class="error">${data.error || 'No hay ofertas disponibles'}</p>`;
             continue;
           }
 
-          // General: muestra 6 ofertas directamente
+          // General: muestra 6 ofertas
           if (cat === 'general') {
             contenedor.innerHTML = data.map(oferta => `
               <div class="oferta">
@@ -187,18 +189,16 @@
               </div>
             `).join('');
           } 
-          // Electrónica/Deportes: 1 destacada + 5 ocultas
+          // Electrónica/Deportes: 1 oferta + botón "Ver más"
           else {
             contenedor.innerHTML = `
-              ${data.slice(0, 1).map(oferta => `
-                <div class="oferta">
-                  <img src="${oferta.imagen || 'https://via.placeholder.com/150'}" alt="${oferta.titulo}">
-                  <h3>${oferta.titulo}</h3>
-                  <p>${oferta.precio} <span style="color:green">(-${oferta.descuento}%)</span></p>
-                  <a href="${oferta.url}" target="_blank">Ver oferta</a>
-                </div>
-              `).join('')}
-              <div class="extra" id="extra-${cat}">
+              <div class="oferta">
+                <img src="${data[0].imagen || 'https://via.placeholder.com/150'}" alt="${data[0].titulo}">
+                <h3>${data[0].titulo}</h3>
+                <p>${data[0].precio} <span style="color:green">(-${data[0].descuento}%)</span></p>
+                <a href="${data[0].url}" target="_blank">Ver oferta</a>
+              </div>
+              <div class="extra" id="extra-${cat}" style="display:none;">
                 ${data.slice(1).map(oferta => `
                   <div class="oferta">
                     <img src="${oferta.imagen || 'https://via.placeholder.com/150'}" alt="${oferta.titulo}">
@@ -208,33 +208,22 @@
                   </div>
                 `).join('')}
               </div>
-              <span class="ver-mas" onclick="verMas('${cat}')">Ver más (${data.length - 1})</span>
-              <span class="ver-menos" onclick="verMenos('${cat}')" style="display:none;">Ver menos</span>
+              <button class="ver-mas" onclick="document.getElementById('extra-${cat}').style.display='block'; this.style.display='none';">
+                Ver más (${data.length - 1})
+              </button>
             `;
           }
         } catch (e) {
-          console.error(`Error en ${cat}:`, e);
-          document.getElementById(cat).innerHTML = `
+          contenedor.innerHTML = `
             <p class="error">Error al cargar ofertas</p>
             <button onclick="cargarOfertas()">Reintentar</button>
           `;
+          console.error(`Error en ${cat}:`, e);
         }
       }
     }
 
-    function verMas(cat) {
-      document.getElementById(`extra-${cat}`).style.display = 'block';
-      document.querySelector(`#${cat} .ver-mas`).style.display = 'none';
-      document.querySelector(`#${cat} .ver-menos`).style.display = 'block';
-    }
-
-    function verMenos(cat) {
-      document.getElementById(`extra-${cat}`).style.display = 'none';
-      document.querySelector(`#${cat} .ver-mas`).style.display = 'block';
-      document.querySelector(`#${cat} .ver-menos`).style.display = 'none';
-    }
-
-    // Iniciar y actualizar cada 60 segundos
+    // Actualizar cada 60 segundos
     window.onload = cargarOfertas;
     setInterval(cargarOfertas, 60000);
   </script>
