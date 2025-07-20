@@ -5,7 +5,7 @@ import os
 
 app = Flask(__name__)
 
-# Conexión a MongoDB (tus credenciales ya integradas)
+# Conexión a MongoDB (TUS CREDENCIALES ORIGINALES)
 MONGO_URI = "mongodb+srv://soyanaisanais:Eduardo1981@cluster0.yaamkjc.mongodb.net/Chollos_2025?retryWrites=true&w=majority"
 client = MongoClient(MONGO_URI)
 db = client["Chollos_2025"]
@@ -18,15 +18,12 @@ def home():
 def general():
     try:
         datos = list(db["Ultimas_Ofertas"].find().sort("fecha", -1).limit(6))
-        return jsonify([{
-            "_id": str(d["_id"]),
-            "titulo": d.get("titulo", "Sin título"),
-            "precio": d.get("precio", "?"),
-            "descuento": d.get("descuento", 0),
-            "url": d.get("url", "#"),
-            "imagen": d.get("imagen", ""),
-            "fecha": str(d.get("fecha", ""))
-        } for d in datos])
+        for d in datos:
+            d['_id'] = str(d['_id'])
+            # Asegurar que la imagen tenga URL válida
+            if 'imagen' not in d or not d['imagen'].startswith(('http', 'https')):
+                d['imagen'] = 'https://via.placeholder.com/300?text=Imagen+no+disponible'
+        return jsonify(datos)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -34,15 +31,11 @@ def general():
 def electronica():
     try:
         datos = list(db["publicados_electronica"].find().sort("fecha", -1).limit(6))
-        return jsonify([{
-            "_id": str(d["_id"]),
-            "titulo": d.get("titulo", "Sin título"),
-            "precio": d.get("precio", "?"),
-            "descuento": d.get("descuento", 0),
-            "url": d.get("url", "#"),
-            "imagen": d.get("imagen", ""),
-            "fecha": str(d.get("fecha", ""))
-        } for d in datos])
+        for d in datos:
+            d['_id'] = str(d['_id'])
+            if 'imagen' not in d or not d['imagen'].startswith(('http', 'https')):
+                d['imagen'] = 'https://via.placeholder.com/300?text=Imagen+no+disponible'
+        return jsonify(datos)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -50,15 +43,11 @@ def electronica():
 def deportes():
     try:
         datos = list(db["publicados_deportes"].find().sort("fecha", -1).limit(6))
-        return jsonify([{
-            "_id": str(d["_id"]),
-            "titulo": d.get("titulo", "Sin título"),
-            "precio": d.get("precio", "?"),
-            "descuento": d.get("descuento", 0),
-            "url": d.get("url", "#"),
-            "imagen": d.get("imagen", ""),
-            "fecha": str(d.get("fecha", ""))
-        } for d in datos])
+        for d in datos:
+            d['_id'] = str(d['_id'])
+            if 'imagen' not in d or not d['imagen'].startswith(('http', 'https')):
+                d['imagen'] = 'https://via.placeholder.com/300?text=Imagen+no+disponible'
+        return jsonify(datos)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
