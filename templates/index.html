@@ -6,7 +6,6 @@
   <title>Chollos 2025</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* TUS ESTILOS ORIGINALES (COMPLETOS) */
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
@@ -65,7 +64,8 @@
       object-fit: contain;
       border-radius: 10px;
       border: 1px solid #ddd;
-      background: #f5f5f5;
+      background: #fff;
+      padding: 5px;
     }
     .oferta h3 {
       font-size: 1em;
@@ -79,37 +79,22 @@
     .oferta a {
       display: inline-block;
       margin-top: 10px;
-      padding: 5px 15px;
+      padding: 8px 20px;
       background: #ffd700;
       color: #000;
       text-decoration: none;
       border-radius: 5px;
       font-weight: bold;
+      border: 1px solid #000;
     }
-    .ver-mas {
-      display: block;
+    .error {
+      color: red;
+      padding: 10px;
       text-align: center;
-      margin-top: 15px;
-      color: #1e90ff;
-      font-weight: bold;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 5px;
     }
-    .ver-menos {
-      display: none;
+    .cargando {
+      color: #666;
       text-align: center;
-      margin-top: 15px;
-      color: #1e90ff;
-      font-weight: bold;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 5px;
-    }
-    .extra {
-      display: none;
     }
     .qr {
       text-align: center;
@@ -120,7 +105,7 @@
       border-radius: 12px;
       background: #fff;
       padding: 8px;
-      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     footer {
       background: #ccc;
@@ -129,14 +114,6 @@
       color: #222;
       padding: 20px;
       margin-top: 60px;
-    }
-    .error {
-      color: red;
-      padding: 10px;
-    }
-    .cargando {
-      color: #666;
-      text-align: center;
     }
     @media (max-width: 768px) {
       .card-container {
@@ -170,9 +147,7 @@
   </div>
 
   <div class="qr">
-    <!-- Cambia esta ruta si tu QR está en otra ubicación -->
-    <img src="/static/canal_qr.png" alt="QR del canal de Telegram" 
-         onerror="this.src='https://via.placeholder.com/170x170?text=QR+no+encontrado'">
+    <img src="/static/canal_qr.png" alt="QR de Telegram" onerror="this.src='https://via.placeholder.com/170x170?text=QR+no+disponible'">
   </div>
 
   <footer>
@@ -180,20 +155,6 @@
   </footer>
 
   <script>
-    // Función mejorada para mostrar imágenes
-    function mostrarImagen(url, titulo) {
-      if (!url || !url.startsWith('http')) {
-        return '<div style="background:#f5f5f5;height:200px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid #ddd;color:#999">Imagen no disponible</div>';
-      }
-      // Fuerza HTTPS si es HTTP
-      const imgUrl = url.replace('http://', 'https://');
-      return `<img src="${imgUrl}" 
-                  alt="${titulo || 'Producto'}" 
-                  style="max-width:100%;height:200px;object-fit:contain;border-radius:10px;border:1px solid #ddd;"
-                  onerror="this.src='https://via.placeholder.com/300x200?text=Error+al+cargar'">`;
-    }
-
-    // Función para cargar ofertas
     async function cargarOfertas() {
       const categorias = ['general', 'electronica', 'deportes'];
       
@@ -203,32 +164,36 @@
           const data = await res.json();
           const contenedor = document.getElementById(cat);
           
-          if (!data || data.error || data.length === 0) {
+          if (!data || data.error) {
             contenedor.innerHTML = `<p class="error">${
               cat === 'deportes' ? 'Próximamente' : 
-              data.error || 'No hay ofertas'
+              data?.error || 'Error cargando'
             }</p>`;
             continue;
           }
 
-          let html = data.map((oferta, index) => `
-            <div class="oferta">
-              ${mostrarImagen(oferta.imagen, oferta.titulo)}
-              <h3>${oferta.titulo || 'Sin título'}</h3>
-              <p>${oferta.precio || '?'} <span style="color:green">${
-                oferta.descuento ? `(-${oferta.descuento}%)` : ''
-              }</span></p>
-              <a href="${oferta.url || '#'}" target="_blank">Ver oferta</a>
-            </div>
-          `).join('');
-
+          let html = '';
+          if (data.length > 0) {
+            html = data.map(item => `
+              <div class="oferta">
+                <img src="${item.imagen}" 
+                     alt="${item.titulo}"
+                     onerror="this.src='https://via.placeholder.com/300x200?text=Imagen+no+disponible'">
+                <h3>${item.titulo}</h3>
+                <p>${item.precio} ${item.descuento ? `<span style="color:green">(-${item.descuento}%)</span>` : ''}</p>
+                <a href="${item.url}" target="_blank">Ver oferta</a>
+              </div>
+            `).join('');
+          } else {
+            html = '<p class="error">No hay ofertas</p>';
+          }
+          
           contenedor.innerHTML = html;
         } catch (e) {
           console.error(`Error en ${cat}:`, e);
           document.getElementById(cat).innerHTML = `
-            <p class="error">Error al cargar</p>
-            <button onclick="cargarOfertas()">Reintentar</button>
-          `;
+            <p class="error">Error temporal</p>
+            <button onclick="cargarOfertas()">Reintentar</button>`;
         }
       }
     }
