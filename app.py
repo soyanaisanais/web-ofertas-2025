@@ -49,7 +49,7 @@ def electronica():
 @app.route('/api/deportes')
 def deportes():
     try:
-        datos = list(db["publicados_deports"].find().sort("fecha", -1).limit(6))
+        datos = list(db["publicados_deportes"].find().sort("fecha", -1).limit(6))
         return jsonify([{
             "_id": str(d["_id"]),
             "titulo": d.get("titulo", "Sin título"),
