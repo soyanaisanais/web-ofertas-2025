@@ -60,11 +60,19 @@
       text-align: center;
       margin-top: 15px;
     }
-    .ver-mas, .ver-menos {
+    .ver-mas {
       display: block;
       text-align: center;
       margin-top: 15px;
       color: #1e90ff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .ver-menos {
+      display: none;
+      text-align: center;
+      margin-top: 10px;
+      color: #ff4500;
       font-weight: bold;
       cursor: pointer;
     }
@@ -100,19 +108,20 @@
         try {
           const res = await fetch(`/api/${categorias[i]}`);
           const data = await res.json();
+          const mainText = data.texto || 'Sin datos aún';
           const extras = data.extras || [];
           const contenedor = document.getElementById(categorias[i]);
 
           contenedor.innerHTML = `
-            <div>${data.texto || 'Sin datos aún'}</div>
-            <div class="extra" id="extra-${categorias[i]}" style="display:none;">
+            <div>${mainText}</div>
+            <div class="extra" id="extra-${categorias[i]}">
               ${extras.map(e => `<p>${e}</p>`).join('')}
             </div>
             <span class="ver-mas" onclick="mostrar('${categorias[i]}')">Ver más</span>
-            <span class="ver-menos" id="menos-${categorias[i]}" style="display:none;" onclick="ocultar('${categorias[i]}')">Ver menos</span>
+            <span class="ver-menos" id="menos-${categorias[i]}" onclick="ocultar('${categorias[i]}')">Ver menos</span>
           `;
         } catch (e) {
-          document.getElementById(categorias[i]).innerHTML = '<p style="color:red">Error al cargar productos</p>';
+          document.getElementById(categorias[i]).innerHTML = '<p style="color:red">Error al cargar</p>';
         }
       }
     }
@@ -161,3 +170,4 @@
   </footer>
 </body>
 </html>
+
