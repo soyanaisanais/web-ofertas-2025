@@ -131,45 +131,88 @@
     Esta es una página de afiliados. No vendemos productos directamente.
   </footer>
 
-  <script>
+ <script>
     async function cargarOfertas() {
-      const categorias = ['general', 'electronica', 'deportes'];
-      for (let cat of categorias) {
-        try {
-          const res = await fetch(`/api/${cat}`);
-          const data = await res.json();
-          
-          const contenedor = document.getElementById(cat);
-          if (data.length === 0) {
-            contenedor.innerHTML = '<p>No hay ofertas</p>';
-            continue;
-          }
-
-          contenedor.innerHTML = `
-            <div class="oferta">
-              <img src="${data[0].imagen}" alt="Imagen">
-              <h3>${data[0].titulo}</h3>
-              <p>${data[0].precio} <span style="color:green">(-${data[0].descuento}%)</span></p>
-              <a href="${data[0].url}" target="_blank">Ver oferta</a>
-            </div>
-            <div class="extra" id="extra-${cat}">
-              ${data.slice(1).map(item => `
-                <div class="oferta">
-                  <img src="${item.imagen}" alt="Imagen">
-                  <h3>${item.titulo}</h3>
-                  <p>${item.precio} <span style="color:green">(-${item.descuento}%)</span></p>
-                  <a href="${item.url}" target="_blank">Ver oferta</a>
-                </div>
-              `).join('')}
-            </div>
-            <span class="ver-mas" onclick="document.getElementById('extra-${cat}').style.display='block'; this.style.display='none';">Ver más</span>
-          `;
-        } catch (e) {
-          document.getElementById(cat).innerHTML = '<p style="color:red">Error al cargar</p>';
+        const categorias = ['general', 'electronica', 'deportes'];
+        
+        for (let cat of categorias) {
+            try {
+                const contenedor = document.getElementById(cat);
+                const res = await fetch(`/api/${cat}`);
+                
+                if (!res.ok) {
+                    throw new Error(`Error: ${res.status}`);
+                }
+                
+                const data = await res.json();
+                
+                // Debug: Ver qué datos llegan
+                console.log(`${cat}:`, data);
+                
+                if (!data || data.length === 0) {
+                    contenedor.innerHTML = '<p>No hay ofertas disponibles</p>';
+                    continue;
+                }
+                
+                // Para "general" muestra TODAS las ofertas (6)
+                if (cat === 'general') {
+                    contenedor.innerHTML = data.map(oferta => `
+                        <div class="oferta">
+                            <img src="${oferta.imagen}" alt="Imagen">
+                            <h3>${oferta.titulo}</h3>
+                            <p>${oferta.precio} <span style="color:green">(-${oferta.descuento}%)</span></p>
+                            <a href="${oferta.url}" target="_blank">Ver oferta</a>
+                        </div>
+                    `).join('');
+                } 
+                // Para electrónica/deportes: 1 destacada + 5 ocultas
+                else {
+                    contenedor.innerHTML = `
+                        <div class="oferta">
+                            <img src="${data[0].imagen}" alt="Imagen">
+                            <h3>${data[0].titulo}</h3>
+                            <p>${data[0].precio} <span style="color:green">(-${data[0].descuento}%)</span></p>
+                            <a href="${data[0].url}" target="_blank">Ver oferta</a>
+                        </div>
+                        <div class="extra" id="extra-${cat}">
+                            ${data.slice(1).map(oferta => `
+                                <div class="oferta">
+                                    <img src="${oferta.imagen}" alt="Imagen">
+                                    <h3>${oferta.titulo}</h3>
+                                    <p>${oferta.precio} <span style="color:green">(-${oferta.descuento}%)</span></p>
+                                    <a href="${oferta.url}" target="_blank">Ver oferta</a>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <span class="ver-mas" onclick="verMas('${cat}')">Ver más (${data.length - 1})</span>
+                        <span class="ver-menos" onclick="verMenos('${cat}')" style="display:none;">Ver menos</span>
+                    `;
+                }
+            } catch (e) {
+                console.error(`Error en ${cat}:`, e);
+                document.getElementById(cat).innerHTML = `
+                    <p style="color:red">Error al cargar</p>
+                    <button onclick="cargarOfertas()">Reintentar</button>
+                `;
+            }
         }
-      }
     }
+
+    function verMas(cat) {
+        document.getElementById(`extra-${cat}`).style.display = 'block';
+        document.querySelector(`#${cat} .ver-mas`).style.display = 'none';
+        document.querySelector(`#${cat} .ver-menos`).style.display = 'block';
+    }
+
+    function verMenos(cat) {
+        document.getElementById(`extra-${cat}`).style.display = 'none';
+        document.querySelector(`#${cat} .ver-mas`).style.display = 'block';
+        document.querySelector(`#${cat} .ver-menos`).style.display = 'none';
+    }
+
+    // Actualizar cada 60 segundos
     window.onload = cargarOfertas;
-  </script>
+    setInterval(cargarOfertas, 60000);
+</script>
 </body>
 </html>
