@@ -19,23 +19,29 @@ def home():
 def api(categoria):
     try:
         if categoria == "general":
-            filtro = {}
+            # 6 ofertas MÁS RECIENTES de cualquier categoría
+            datos = list(coleccion.find({}).sort("fecha", -1).limit(6))
         elif categoria == "electronica":
-            filtro = {"categoria": "Electronics"}
+            # Solo electrónica (asegúrate que en MongoDB la categoría es EXACTAMENTE "Electronics")
+            datos = list(coleccion.find({"categoria": "Electronics"}).sort("fecha", -1).limit(6))
         elif categoria == "deportes":
-            filtro = {"categoria": "Sports"}
+            # Solo deportes (categoría EXACTAMENTE "Sports")
+            datos = list(coleccion.find({"categoria": "Sports"}).sort("fecha", -1).limit(6))
         else:
             return jsonify({"error": "Categoría no válida"}), 400
 
-        datos = list(coleccion.find(filtro).sort("fecha", -1).limit(10))
+        if not datos:
+            return jsonify({"error": "No hay ofertas"}), 404
+
         return jsonify([{
             "imagen": d.get("imagen", ""),
             "titulo": d.get("titulo", "Sin título"),
             "precio": d.get("precio", "?"),
             "descuento": d.get("descuento", 0),
-            "url": d.get("url", "#")
+            "url": d.get("url", "#"),
+            "categoria": d.get("categoria", "")  # Añadido para debug
         } for d in datos])
-    
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
