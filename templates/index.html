@@ -6,7 +6,6 @@
   <title>Chollos 2025</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* === ESTILOS COMPLETOS (igual que tu versión original) === */
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
@@ -62,9 +61,11 @@
     }
     .oferta img {
       max-width: 100%;
-      height: auto;
+      height: 200px;
+      object-fit: contain;
       border-radius: 10px;
       border: 1px solid #ddd;
+      background: #f5f5f5;
     }
     .oferta h3 {
       font-size: 1em;
@@ -173,99 +174,84 @@
   </div>
 
   <footer>
-    Esta es una página de afiliados. No vendemos productos directamente. Las ofertas y ventas pertenecen a terceros.
+    Esta es una página de afiliados. No vendemos productos directamente.
   </footer>
 
   <script>
-    // ===== FUNCIONES PRINCIPALES =====
-    async function cargarOfertas() {
-      console.log("Actualizando ofertas...");
-      const categorias = [
-        { id: "general", nombre: "Chollos 2025", coleccion: "Ultimas_Ofertas" },
-        { id: "electronica", nombre: "Electrónica", coleccion: "publicados_electronica" },
-        { id: "deportes", nombre: "Deportes", coleccion: "publicados_deports" }
-      ];
-
-      for (const cat of categorias) {
-        await cargarCategoria(cat);
-      }
-    }
-
-    async function cargarCategoria(categoria) {
-      const contenedor = document.getElementById(categoria.id);
-      try {
-        const respuesta = await fetch(`/api/${categoria.id}`);
-        
-        if (!respuesta.ok) {
-          throw new Error(`Error HTTP: ${respuesta.status}`);
-        }
-
-        const datos = await respuesta.json();
-        console.log(`${categoria.id}:`, datos);
-
-        if (!datos || datos.length === 0) {
-          contenedor.innerHTML = `<p class="error">No hay ofertas en ${categoria.nombre}</p>`;
-          return;
-        }
-
-        if (categoria.id === 'general') {
-          contenedor.innerHTML = datos.map(crearOfertaHTML).join('');
-        } else {
-          contenedor.innerHTML = `
-            ${crearOfertaHTML(datos[0])}
-            <div class="extra" id="extra-${categoria.id}" style="display:none;">
-              ${datos.slice(1).map(crearOfertaHTML).join('')}
-            </div>
-            <button class="ver-mas" onclick="mostrarMasOfertas('${categoria.id}')">
-              Ver más (${datos.length - 1})
-            </button>
-            <button class="ver-menos" onclick="mostrarMenosOfertas('${categoria.id}')">
-              Ver menos
-            </button>
-          `;
-        }
-      } catch (error) {
-        console.error(`Error en ${categoria.id}:`, error);
-        contenedor.innerHTML = `
-          <p class="error">Error al cargar ${categoria.nombre}</p>
-          <button onclick="cargarOfertas()">Reintentar</button>
-        `;
-      }
-    }
-
+    // Función para crear HTML de ofertas (con solución para imágenes faltantes)
     function crearOfertaHTML(oferta) {
-      const imagenUrl = oferta.imagen && oferta.imagen.startsWith('http') 
-        ? oferta.imagen 
-        : '/static/placeholder.jpg';
+      const tieneImagen = oferta.imagen && oferta.imagen.startsWith('http');
       
       return `
         <div class="oferta">
-          <img src="${imagenUrl}" alt="${oferta.titulo}" 
-               onerror="this.src='/static/placeholder.jpg'">
-          <h3>${oferta.titulo}</h3>
-          <p>${oferta.precio} <span style="color:green">(-${oferta.descuento}%)</span></p>
-          <a href="${oferta.url}" target="_blank">Ver oferta</a>
+          <div style="${!tieneImagen ? 'background:#f5f5f5;border-radius:10px;height:200px;display:flex;align-items:center;justify-content:center;' : ''}">
+            ${tieneImagen 
+              ? `<img src="${oferta.imagen}" alt="${oferta.titulo}" onerror="this.parentElement.innerHTML='<span style=color:#999>Imagen no disponible</span>'">`
+              : '<span style="color:#999">Imagen no disponible</span>'}
+          </div>
+          <h3>${oferta.titulo || 'Sin título'}</h3>
+          <p>${oferta.precio || '?'} <span style="color:green">${oferta.descuento ? `(-${oferta.descuento}%)` : ''}</span></p>
+          <a href="${oferta.url || '#'}" target="_blank">Ver oferta</a>
         </div>
       `;
     }
 
-    function mostrarMasOfertas(categoria) {
-      document.getElementById(`extra-${categoria}`).style.display = 'block';
-      document.querySelector(`#${categoria} .ver-mas`).style.display = 'none';
-      document.querySelector(`#${categoria} .ver-menos`).style.display = 'block';
+    // Función principal para cargar ofertas
+    async function cargarOfertas() {
+      const categorias = [
+        { id: "general", nombre: "Chollos 2025" },
+        { id: "electronica", nombre: "Electrónica" },
+        { id: "deportes", nombre: "Deportes" }
+      ];
+
+      for (const cat of categorias) {
+        const contenedor = document.getElementById(cat.id);
+        try {
+          const res = await fetch(`/api/${cat.id}`);
+          const data = await res.json();
+          
+          if (!data || data.length === 0) {
+            contenedor.innerHTML = `<p class="error">No hay ofertas en ${cat.nombre}</p>`;
+            continue;
+          }
+
+          if (cat.id === 'general') {
+            contenedor.innerHTML = data.map(crearOfertaHTML).join('');
+          } else {
+            contenedor.innerHTML = `
+              ${crearOfertaHTML(data[0])}
+              <div class="extra" id="extra-${cat.id}" style="display:none;">
+                ${data.slice(1).map(crearOfertaHTML).join('')}
+              </div>
+              <button class="ver-mas" onclick="
+                document.getElementById('extra-${cat.id}').style.display='block';
+                this.style.display='none';
+                document.querySelector('#${cat.id} .ver-menos').style.display='block';
+              ">
+                Ver más (${data.length - 1})
+              </button>
+              <button class="ver-menos" onclick="
+                document.getElementById('extra-${cat.id}').style.display='none';
+                this.style.display='none';
+                document.querySelector('#${cat.id} .ver-mas').style.display='block';
+              " style="display:none;">
+                Ver menos
+              </button>
+            `;
+          }
+        } catch (e) {
+          contenedor.innerHTML = `
+            <p class="error">Error al cargar ${cat.nombre}</p>
+            <button onclick="cargarOfertas()">Reintentar</button>
+          `;
+          console.error(`Error en ${cat.id}:`, e);
+        }
+      }
     }
 
-    function mostrarMenosOfertas(categoria) {
-      document.getElementById(`extra-${categoria}`).style.display = 'none';
-      document.querySelector(`#${categoria} .ver-mas`).style.display = 'block';
-      document.querySelector(`#${categoria} .ver-menos`).style.display = 'none';
-    }
-
-    // ===== INICIALIZACIÓN =====
-    document.addEventListener('DOMContentLoaded', () => {
-      cargarOfertas();
-      setInterval(cargarOfertas, 30000); // Actualiza cada 30 segundos
-    });
+    // Iniciar y actualizar cada 30 segundos
+    window.onload = cargarOfertas;
+    setInterval(cargarOfertas, 30000);
   </script>
 </body>
 </html>
