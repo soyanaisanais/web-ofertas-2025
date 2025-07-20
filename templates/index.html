@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -69,10 +70,10 @@
       cursor: pointer;
     }
     .ver-menos {
-      display: none;
+      display: block;
       text-align: center;
       margin-top: 10px;
-      color: #ff4500;
+      color: #dc143c;
       font-weight: bold;
       cursor: pointer;
     }
@@ -108,36 +109,23 @@
         try {
           const res = await fetch(`/api/${categorias[i]}`);
           const data = await res.json();
-          const mainText = data.texto || 'Sin datos aún';
+          const main = data.texto || 'Sin datos aún';
           const extras = data.extras || [];
           const contenedor = document.getElementById(categorias[i]);
 
           contenedor.innerHTML = `
-            <div>${mainText}</div>
-            <div class="extra" id="extra-${categorias[i]}">
+            <div>${main}</div>
+            <div class="extra" id="extra-${categorias[i]}" style="display:none;">
               ${extras.map(e => `<p>${e}</p>`).join('')}
+              <span class="ver-menos" onclick="document.getElementById('extra-${categorias[i]}').style.display = 'none'; document.getElementById('ver-mas-${categorias[i]}').style.display = 'inline-block';">Ver menos</span>
             </div>
-            <span class="ver-mas" onclick="mostrar('${categorias[i]}')">Ver más</span>
-            <span class="ver-menos" id="menos-${categorias[i]}" onclick="ocultar('${categorias[i]}')">Ver menos</span>
+            <span id="ver-mas-${categorias[i]}" class="ver-mas" onclick="document.getElementById('extra-${categorias[i]}').style.display = 'block'; this.style.display = 'none';">Ver más</span>
           `;
         } catch (e) {
           document.getElementById(categorias[i]).innerHTML = '<p style="color:red">Error al cargar</p>';
         }
       }
     }
-
-    function mostrar(cat) {
-      document.getElementById('extra-' + cat).style.display = 'block';
-      document.querySelector(`#menos-${cat}`).style.display = 'inline-block';
-      document.querySelector(`#${cat} .ver-mas`).style.display = 'none';
-    }
-
-    function ocultar(cat) {
-      document.getElementById('extra-' + cat).style.display = 'none';
-      document.querySelector(`#menos-${cat}`).style.display = 'none';
-      document.querySelector(`#${cat} .ver-mas`).style.display = 'inline-block';
-    }
-
     window.onload = cargarOfertas;
   </script>
 </head>
@@ -170,4 +158,3 @@
   </footer>
 </body>
 </html>
-
