@@ -6,6 +6,7 @@
   <title>Chollos 2025</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    /* TUS ESTILOS ORIGINALES (COMPLETOS) */
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
@@ -169,7 +170,9 @@
   </div>
 
   <div class="qr">
-    <img src="/static/canal_qr.png" alt="QR del canal de Telegram">
+    <!-- Cambia esta ruta si tu QR está en otra ubicación -->
+    <img src="/static/canal_qr.png" alt="QR del canal de Telegram" 
+         onerror="this.src='https://via.placeholder.com/170x170?text=QR+no+encontrado'">
   </div>
 
   <footer>
@@ -177,15 +180,20 @@
   </footer>
 
   <script>
-    // Función para mostrar imágenes con placeholder si fallan
+    // Función mejorada para mostrar imágenes
     function mostrarImagen(url, titulo) {
       if (!url || !url.startsWith('http')) {
         return '<div style="background:#f5f5f5;height:200px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid #ddd;color:#999">Imagen no disponible</div>';
       }
-      return `<img src="${url}" alt="${titulo}" style="max-width:100%;height:200px;object-fit:contain;border-radius:10px;border:1px solid #ddd;" onerror="this.src='https://via.placeholder.com/300?text=Error+imagen'">`;
+      // Fuerza HTTPS si es HTTP
+      const imgUrl = url.replace('http://', 'https://');
+      return `<img src="${imgUrl}" 
+                  alt="${titulo || 'Producto'}" 
+                  style="max-width:100%;height:200px;object-fit:contain;border-radius:10px;border:1px solid #ddd;"
+                  onerror="this.src='https://via.placeholder.com/300x200?text=Error+al+cargar'">`;
     }
 
-    // Función principal para cargar ofertas
+    // Función para cargar ofertas
     async function cargarOfertas() {
       const categorias = ['general', 'electronica', 'deportes'];
       
@@ -195,56 +203,37 @@
           const data = await res.json();
           const contenedor = document.getElementById(cat);
           
-          if (!data || data.length === 0) {
-            contenedor.innerHTML = `<p class="error">${cat === 'deportes' ? 'Próximamente: ofertas de deportes' : 'No hay ofertas disponibles'}</p>`;
+          if (!data || data.error || data.length === 0) {
+            contenedor.innerHTML = `<p class="error">${
+              cat === 'deportes' ? 'Próximamente' : 
+              data.error || 'No hay ofertas'
+            }</p>`;
             continue;
           }
 
-          // Primer producto siempre visible
-          let html = `
+          let html = data.map((oferta, index) => `
             <div class="oferta">
-              ${mostrarImagen(data[0].imagen, data[0].titulo)}
-              <h3>${data[0].titulo}</h3>
-              <p>${data[0].precio} <span style="color:green">(-${data[0].descuento}%)</span></p>
-              <a href="${data[0].url}" target="_blank">Ver oferta</a>
-            </div>`;
-
-          // Productos adicionales (ocultos)
-          if (data.length > 1) {
-            html += `
-              <div class="extra" id="extra-${cat}">
-                ${data.slice(1).map(oferta => `
-                  <div class="oferta">
-                    ${mostrarImagen(oferta.imagen, oferta.titulo)}
-                    <h3>${oferta.titulo}</h3>
-                    <p>${oferta.precio} <span style="color:green">(-${oferta.descuento}%)</span></p>
-                    <a href="${oferta.url}" target="_blank">Ver oferta</a>
-                  </div>
-                `).join('')}
-              </div>
-              <button class="ver-mas" onclick="
-                document.getElementById('extra-${cat}').style.display='block';
-                this.style.display='none';
-                document.querySelector('#${cat} .ver-menos').style.display='block';
-              ">Ver más (${data.length - 1})</button>
-              <button class="ver-menos" onclick="
-                document.getElementById('extra-${cat}').style.display='none';
-                this.style.display='none';
-                document.querySelector('#${cat} .ver-mas').style.display='block';
-              " style="display:none;">Ver menos</button>`;
-          }
+              ${mostrarImagen(oferta.imagen, oferta.titulo)}
+              <h3>${oferta.titulo || 'Sin título'}</h3>
+              <p>${oferta.precio || '?'} <span style="color:green">${
+                oferta.descuento ? `(-${oferta.descuento}%)` : ''
+              }</span></p>
+              <a href="${oferta.url || '#'}" target="_blank">Ver oferta</a>
+            </div>
+          `).join('');
 
           contenedor.innerHTML = html;
         } catch (e) {
           console.error(`Error en ${cat}:`, e);
           document.getElementById(cat).innerHTML = `
-            <p class="error">Error al cargar ofertas</p>
-            <button onclick="cargarOfertas()">Reintentar</button>`;
+            <p class="error">Error al cargar</p>
+            <button onclick="cargarOfertas()">Reintentar</button>
+          `;
         }
       }
     }
 
-    // Iniciar carga y actualizar cada 30 segundos
+    // Iniciar y actualizar cada 30 segundos
     window.onload = cargarOfertas;
     setInterval(cargarOfertas, 30000);
   </script>
