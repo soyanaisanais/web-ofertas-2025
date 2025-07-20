@@ -6,8 +6,8 @@ app = Flask(__name__)
 
 # Cargar configuración desde variables de entorno
 MONGO_URI = os.getenv("MONGO_URI")
-DB_NAME = os.getenv("DATABASE_NAME", "amazon")
-COLLECTION_NAME = os.getenv("COLLECTION_NAME", "productos")
+DB_NAME = os.getenv("DATABASE_NAME", "Chollos_2025")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME", "Ultimas_Ofertas")
 
 # Conexión a MongoDB Atlas
 client = MongoClient(MONGO_URI)
