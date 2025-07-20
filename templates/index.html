@@ -172,21 +172,16 @@
             continue;
           }
 
-          let html = '';
-          if (data.length > 0) {
-            html = data.map(item => `
-              <div class="oferta">
-                <img src="${item.imagen}" 
-                     alt="${item.titulo}"
-                     onerror="this.src='https://via.placeholder.com/300x200?text=Imagen+no+disponible'">
-                <h3>${item.titulo}</h3>
-                <p>${item.precio} ${item.descuento ? `<span style="color:green">(-${item.descuento}%)</span>` : ''}</p>
-                <a href="${item.url}" target="_blank">Ver oferta</a>
-              </div>
-            `).join('');
-          } else {
-            html = '<p class="error">No hay ofertas</p>';
-          }
+          let html = data.map(item => `
+            <div class="oferta">
+              <img src="${item.imagen}" 
+                   alt="${item.titulo}"
+                   onerror="this.src='https://via.placeholder.com/300x200?text=Imagen+no+disponible'">
+              <h3>${item.titulo}</h3>
+              <p>${item.precio} ${item.descuento ? `<span style="color:green">(-${item.descuento}%)</span>` : ''}</p>
+              <a href="${item.url}" target="_blank" rel="noopener noreferrer">Ver oferta</a>
+            </div>
+          `).join('');
           
           contenedor.innerHTML = html;
         } catch (e) {
