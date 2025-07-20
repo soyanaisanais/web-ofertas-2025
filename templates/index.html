@@ -6,147 +6,26 @@
   <title>Chollos 2025</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: #1a1a1a;
-      color: #f1f1f1;
-    }
-    header {
-      background-color: #000;
-      padding: 50px 20px 30px;
-      text-align: center;
-    }
-    .title-3d {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 3.5em;
-      color: #ffd700;
-      text-shadow: 2px 2px 0 #000, 4px 4px 5px #333;
-      display: inline-block;
-      border: 3px solid #000;
-      padding: 20px 40px;
-      border-radius: 20px;
-      background: linear-gradient(145deg, #fff6b0, #ffd700);
-    }
-    .sections {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 25px;
-      padding: 40px 20px;
-      background-color: #eee;
-    }
-    .card {
-      background: #f9f9f9;
-      border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-      width: 320px;
-      padding: 25px;
-      border: 1px solid #ccc;
-      color: #111;
-    }
-    .card h2 {
-      font-size: 1.4em;
-      color: #000;
-      background: #ffd700;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-      border: 2px solid #000;
-      text-shadow: 1px 1px 2px #000;
-    }
-    .oferta {
-      text-align: center;
-      margin-top: 15px;
-    }
-    .oferta img {
-      max-width: 100%;
-      height: 200px;
-      object-fit: contain;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      background: #f5f5f5;
-    }
-    .oferta h3 {
-      font-size: 1em;
-      margin: 10px 0;
-      color: #333;
-    }
-    .oferta p {
-      margin: 5px 0;
-      color: #222;
-    }
-    .oferta a {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 5px 15px;
-      background: #ffd700;
-      color: #000;
-      text-decoration: none;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-    .ver-mas {
-      display: block;
-      text-align: center;
-      margin-top: 15px;
-      color: #1e90ff;
-      font-weight: bold;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 5px;
-    }
-    .ver-menos {
-      display: none;
-      text-align: center;
-      margin-top: 15px;
-      color: #1e90ff;
-      font-weight: bold;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 5px;
-    }
-    .extra {
-      display: none;
-    }
-    .qr {
-      text-align: center;
-      margin: 40px auto;
-    }
-    .qr img {
-      width: 170px;
-      border-radius: 12px;
-      background: #fff;
-      padding: 8px;
-      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
-    }
-    footer {
-      background: #ccc;
-      text-align: center;
-      font-size: 0.8em;
-      color: #222;
-      padding: 20px;
-      margin-top: 60px;
-    }
-    .error {
-      color: red;
-      padding: 10px;
-    }
-    .cargando {
-      color: #666;
-      text-align: center;
-    }
-    @media (max-width: 768px) {
-      .card {
-        width: 90%;
-      }
-      .title-3d {
-        font-size: 2em;
-        padding: 10px 20px;
-      }
-    }
+    body { margin: 0; font-family: 'Poppins', sans-serif; background: #1a1a1a; color: #f1f1f1; }
+    header { background-color: #000; padding: 50px 20px 30px; text-align: center; }
+    .title-3d { font-family: 'Orbitron', sans-serif; font-size: 3.5em; color: #ffd700; text-shadow: 2px 2px 0 #000, 4px 4px 5px #333; display: inline-block; border: 3px solid #000; padding: 20px 40px; border-radius: 20px; background: linear-gradient(145deg, #fff6b0, #ffd700); }
+    .sections { display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; padding: 40px 20px; background-color: #eee; }
+    .card { background: #f9f9f9; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); width: 320px; padding: 25px; border: 1px solid #ccc; color: #111; }
+    .card h2 { font-size: 1.4em; color: #000; background: #ffd700; padding: 10px; border-radius: 8px; text-align: center; border: 2px solid #000; text-shadow: 1px 1px 2px #000; }
+    .oferta { text-align: center; margin-top: 15px; }
+    .oferta img { max-width: 100%; height: 200px; object-fit: contain; border-radius: 10px; border: 1px solid #ddd; background: #f5f5f5; }
+    .oferta h3 { font-size: 1em; margin: 10px 0; color: #333; }
+    .oferta p { margin: 5px 0; color: #222; }
+    .oferta a { display: inline-block; margin-top: 10px; padding: 5px 15px; background: #ffd700; color: #000; text-decoration: none; border-radius: 5px; font-weight: bold; }
+    .ver-mas, .ver-menos { display: block; text-align: center; margin-top: 15px; color: #1e90ff; font-weight: bold; cursor: pointer; background: none; border: none; padding: 5px; }
+    .ver-menos { display: none; }
+    .extra { display: none; }
+    .qr { text-align: center; margin: 40px auto; }
+    .qr img { width: 170px; border-radius: 12px; background: #fff; padding: 8px; box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
+    footer { background: #ccc; text-align: center; font-size: 0.8em; color: #222; padding: 20px; margin-top: 60px; }
+    .error { color: red; padding: 10px; }
+    .cargando { color: #666; text-align: center; }
+    @media (max-width: 768px) { .card { width: 90%; } .title-3d { font-size: 2em; padding: 10px 20px; } }
   </style>
 </head>
 <body>
@@ -157,101 +36,107 @@
   <div class="sections">
     <div class="card">
       <h2>Chollos 2025</h2>
-      <div id="general" class="cargando">Cargando ofertas...</div>
+      <div id="general" class="cargando">Cargando...</div>
     </div>
     <div class="card">
       <h2>Electrónica</h2>
-      <div id="electronica" class="cargando">Cargando ofertas...</div>
+      <div id="electronica" class="cargando">Cargando...</div>
     </div>
     <div class="card">
       <h2>Deportes</h2>
-      <div id="deportes" class="cargando">Cargando ofertas...</div>
+      <div id="deportes" class="cargando">Cargando...</div>
     </div>
   </div>
 
   <div class="qr">
-    <img src="/static/canal_qr.png" alt="QR del canal de Telegram">
+    <img src="/static/canal_qr.png" alt="QR de Telegram">
   </div>
 
   <footer>
-    Esta es una página de afiliados. No vendemos productos directamente.
+    Página de afiliados - No vendemos productos directamente.
   </footer>
 
   <script>
-    // Función para crear HTML de ofertas (con solución para imágenes faltantes)
-    function crearOfertaHTML(oferta) {
-      const tieneImagen = oferta.imagen && oferta.imagen.startsWith('http');
-      
-      return `
-        <div class="oferta">
-          <div style="${!tieneImagen ? 'background:#f5f5f5;border-radius:10px;height:200px;display:flex;align-items:center;justify-content:center;' : ''}">
-            ${tieneImagen 
-              ? `<img src="${oferta.imagen}" alt="${oferta.titulo}" onerror="this.parentElement.innerHTML='<span style=color:#999>Imagen no disponible</span>'">`
-              : '<span style="color:#999">Imagen no disponible</span>'}
-          </div>
-          <h3>${oferta.titulo || 'Sin título'}</h3>
-          <p>${oferta.precio || '?'} <span style="color:green">${oferta.descuento ? `(-${oferta.descuento}%)` : ''}</span></p>
-          <a href="${oferta.url || '#'}" target="_blank">Ver oferta</a>
-        </div>
-      `;
+    // Función para mostrar imágenes o placeholder
+    function mostrarImagen(url, titulo) {
+      if (!url) {
+        return `<div style="background:#f5f5f5;height:200px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid #ddd;">
+                  <span style="color:#999">Imagen no disponible</span>
+                </div>`;
+      }
+      return `<img src="${url.startsWith('http') ? url : 'https://'+url}" 
+                  alt="${titulo}" 
+                  style="max-width:100%;height:200px;object-fit:contain;border-radius:10px;border:1px solid #ddd;"
+                  onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" fill=\"%23f5f5f5\"><rect width=\"100\" height=\"100\" stroke=\"%23ddd\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" font-family=\"Arial\" fill=\"%23999\">Imagen no disponible</text></svg>'">`;
     }
 
-    // Función principal para cargar ofertas
+    // Función principal
     async function cargarOfertas() {
-      const categorias = [
-        { id: "general", nombre: "Chollos 2025" },
-        { id: "electronica", nombre: "Electrónica" },
-        { id: "deportes", nombre: "Deportes" }
-      ];
-
+      const categorias = ['general', 'electronica', 'deportes'];
+      
       for (const cat of categorias) {
-        const contenedor = document.getElementById(cat.id);
         try {
-          const res = await fetch(`/api/${cat.id}`);
+          const res = await fetch(`/api/${cat}?nocache=${Date.now()}`);
           const data = await res.json();
+          const contenedor = document.getElementById(cat);
           
           if (!data || data.length === 0) {
-            contenedor.innerHTML = `<p class="error">No hay ofertas en ${cat.nombre}</p>`;
+            contenedor.innerHTML = `<p class="error">No hay ofertas en ${cat}</p>`;
             continue;
           }
 
-          if (cat.id === 'general') {
-            contenedor.innerHTML = data.map(crearOfertaHTML).join('');
+          if (cat === 'general') {
+            contenedor.innerHTML = data.map(oferta => `
+              <div class="oferta">
+                ${mostrarImagen(oferta.imagen, oferta.titulo)}
+                <h3>${oferta.titulo}</h3>
+                <p>${oferta.precio} <span style="color:green">(-${oferta.descuento}%)</span></p>
+                <a href="${oferta.url}" target="_blank">Ver oferta</a>
+              </div>
+            `).join('');
           } else {
             contenedor.innerHTML = `
-              ${crearOfertaHTML(data[0])}
-              <div class="extra" id="extra-${cat.id}" style="display:none;">
-                ${data.slice(1).map(crearOfertaHTML).join('')}
+              <div class="oferta">
+                ${mostrarImagen(data[0].imagen, data[0].titulo)}
+                <h3>${data[0].titulo}</h3>
+                <p>${data[0].precio} <span style="color:green">(-${data[0].descuento}%)</span></p>
+                <a href="${data[0].url}" target="_blank">Ver oferta</a>
+              </div>
+              <div class="extra" id="extra-${cat}" style="display:none;">
+                ${data.slice(1).map(oferta => `
+                  <div class="oferta">
+                    ${mostrarImagen(oferta.imagen, oferta.titulo)}
+                    <h3>${oferta.titulo}</h3>
+                    <p>${oferta.precio} <span style="color:green">(-${oferta.descuento}%)</span></p>
+                    <a href="${oferta.url}" target="_blank">Ver oferta</a>
+                  </div>
+                `).join('')}
               </div>
               <button class="ver-mas" onclick="
-                document.getElementById('extra-${cat.id}').style.display='block';
+                document.getElementById('extra-${cat}').style.display='block';
                 this.style.display='none';
-                document.querySelector('#${cat.id} .ver-menos').style.display='block';
-              ">
-                Ver más (${data.length - 1})
-              </button>
+                document.querySelector('#${cat} .ver-menos').style.display='block';
+              ">Ver más (${data.length - 1})</button>
               <button class="ver-menos" onclick="
-                document.getElementById('extra-${cat.id}').style.display='none';
+                document.getElementById('extra-${cat}').style.display='none';
                 this.style.display='none';
-                document.querySelector('#${cat.id} .ver-mas').style.display='block';
-              " style="display:none;">
-                Ver menos
-              </button>
+                document.querySelector('#${cat} .ver-mas').style.display='block';
+              " style="display:none;">Ver menos</button>
             `;
           }
         } catch (e) {
-          contenedor.innerHTML = `
-            <p class="error">Error al cargar ${cat.nombre}</p>
+          console.error(`Error en ${cat}:`, e);
+          document.getElementById(cat).innerHTML = `
+            <p class="error">Error al cargar</p>
             <button onclick="cargarOfertas()">Reintentar</button>
           `;
-          console.error(`Error en ${cat.id}:`, e);
         }
       }
     }
 
-    // Iniciar y actualizar cada 30 segundos
+    // Actualizar cada 15 segundos
     window.onload = cargarOfertas;
-    setInterval(cargarOfertas, 30000);
+    setInterval(cargarOfertas, 15000);
   </script>
 </body>
 </html>
