@@ -76,6 +76,10 @@
       margin: 5px 0;
       color: #222;
     }
+    .oferta small {
+      color: #666;
+      font-size: 0.8em;
+    }
     .oferta a {
       display: inline-block;
       margin-top: 10px;
@@ -86,6 +90,31 @@
       border-radius: 5px;
       font-weight: bold;
       border: 1px solid #000;
+    }
+    .ver-mas {
+      display: block;
+      margin: 15px auto;
+      padding: 8px 15px;
+      background: #ffd700;
+      color: #000;
+      border: 1px solid #000;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .ver-menos {
+      display: none;
+      margin: 15px auto;
+      padding: 8px 15px;
+      background: #ffd700;
+      color: #000;
+      border: 1px solid #000;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .extra {
+      display: none;
     }
     .error {
       color: red;
@@ -155,6 +184,24 @@
   </footer>
 
   <script>
+    // Función para mostrar/ocultar ofertas adicionales
+    function toggleOfertas(categoria) {
+      const extra = document.getElementById(`extra-${categoria}`);
+      const btnMas = document.querySelector(`#${categoria} .ver-mas`);
+      const btnMenos = document.querySelector(`#${categoria} .ver-menos`);
+      
+      if (extra.style.display === 'none') {
+        extra.style.display = 'block';
+        btnMas.style.display = 'none';
+        btnMenos.style.display = 'block';
+      } else {
+        extra.style.display = 'none';
+        btnMas.style.display = 'block';
+        btnMenos.style.display = 'none';
+      }
+    }
+
+    // Función principal para cargar ofertas
     async function cargarOfertas() {
       const categorias = ['general', 'electronica', 'deportes'];
       
@@ -162,40 +209,63 @@
         try {
           const res = await fetch(`/api/${cat}?nocache=${Date.now()}`);
           const data = await res.json();
+          console.log(`Datos de ${cat}:`, data); // Para depuración
+          
           const contenedor = document.getElementById(cat);
           
-          if (!data || data.error) {
+          if (!data || data.error || data.length === 0) {
             contenedor.innerHTML = `<p class="error">${
               cat === 'deportes' ? 'Próximamente' : 
-              data?.error || 'Error cargando'
+              data?.error || 'No hay ofertas disponibles'
             }</p>`;
             continue;
           }
 
-          let html = data.map(item => `
+          // Mostrar primera oferta
+          let html = `
             <div class="oferta">
-              <img src="${item.imagen}" 
-                   alt="${item.titulo}"
+              <img src="${data[0].imagen}" 
+                   alt="${data[0].titulo}"
                    onerror="this.src='https://via.placeholder.com/300x200?text=Imagen+no+disponible'">
-              <h3>${item.titulo}</h3>
-              <p>${item.precio} ${item.descuento ? `<span style="color:green">(-${item.descuento}%)</span>` : ''}</p>
-              <a href="${item.url}" target="_blank" rel="noopener noreferrer">Ver oferta</a>
-            </div>
-          `).join('');
-          
+              <h3>${data[0].titulo}</h3>
+              <p>${data[0].precio} ${data[0].descuento ? `<span style="color:green">(-${data[0].descuento}%)</span>` : ''}</p>
+              <small>Actualizado: ${new Date(data[0].fecha).toLocaleString()}</small>
+              <a href="${data[0].url}" target="_blank" rel="noopener">Ver oferta</a>
+            </div>`;
+
+          // Ofertas adicionales (ocultas inicialmente)
+          if (data.length > 1) {
+            html += `
+              <div class="extra" id="extra-${cat}" style="display:none;">
+                ${data.slice(1).map(item => `
+                  <div class="oferta">
+                    <img src="${item.imagen}" 
+                         alt="${item.titulo}"
+                         onerror="this.src='https://via.placeholder.com/300x200?text=Imagen+no+disponible'">
+                    <h3>${item.titulo}</h3>
+                    <p>${item.precio} ${item.descuento ? `<span style="color:green">(-${item.descuento}%)</span>` : ''}</p>
+                    <small>Actualizado: ${new Date(item.fecha).toLocaleString()}</small>
+                    <a href="${item.url}" target="_blank" rel="noopener">Ver oferta</a>
+                  </div>
+                `).join('')}
+              </div>
+              <button class="ver-mas" onclick="toggleOfertas('${cat}')">Ver más (${data.length - 1})</button>
+              <button class="ver-menos" onclick="toggleOfertas('${cat}')" style="display:none;">Ver menos</button>`;
+          }
+
           contenedor.innerHTML = html;
         } catch (e) {
           console.error(`Error en ${cat}:`, e);
           document.getElementById(cat).innerHTML = `
-            <p class="error">Error temporal</p>
+            <p class="error">Error al cargar ofertas</p>
             <button onclick="cargarOfertas()">Reintentar</button>`;
         }
       }
     }
 
-    // Iniciar y actualizar cada 30 segundos
+    // Iniciar y actualizar cada 15 segundos
     window.onload = cargarOfertas;
-    setInterval(cargarOfertas, 30000);
+    setInterval(cargarOfertas, 15000);
   </script>
 </body>
 </html>
