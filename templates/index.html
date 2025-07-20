@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -40,12 +41,12 @@
       border-radius: 12px;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
       width: 320px;
-      padding: 25px;
+      padding: 20px;
       border: 1px solid #ccc;
       color: #111;
     }
     .card h2 {
-      font-size: 1.4em;
+      font-size: 1.3em;
       color: #000;
       background: #ffd700;
       padding: 10px;
@@ -54,13 +55,42 @@
       border: 2px solid #000;
       text-shadow: 1px 1px 2px #000;
     }
-    .card p {
+    .oferta {
+      margin-top: 15px;
+      text-align: center;
+    }
+    .img-oferta {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    .oferta h3 {
       font-size: 1em;
+      margin-top: 10px;
+    }
+    .oferta p {
+      margin: 10px 0;
+    }
+    .oferta .descuento {
+      color: red;
+      font-weight: bold;
+    }
+    .oferta a {
+      display: inline-block;
+      background: #1e90ff;
+      color: white;
+      padding: 8px 16px;
+      text-decoration: none;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+    .ver-mas {
+      display: block;
       text-align: center;
       margin-top: 15px;
-    }
-    .extra {
-      margin-top: 12px;
+      color: #1e90ff;
+      font-weight: bold;
+      cursor: pointer;
     }
     .qr {
       text-align: center;
@@ -84,31 +114,57 @@
   </style>
   <script>
     async function cargarOfertas() {
-      try {
-        const res = await fetch('/api/general');
-        const data = await res.json();
-        const contenedor = document.getElementById('general');
-        contenedor.innerHTML = '';
+      const categorias = ['general', 'electronica', 'deportes'];
+      for (let cat of categorias) {
+        try {
+          const res = await fetch(`/api/${cat}`);
+          const data = await res.json();
+          const ofertas = data.ofertas || [];
 
-        data.forEach(oferta => {
-          const div = document.createElement('div');
-          div.classList.add('extra');
-          div.innerHTML = `
-            <img src="${oferta.imagen}" alt="Imagen" style="width:100px;border-radius:8px;"><br>
-            <strong>${oferta.titulo}</strong><br>
-            <span style="color:green;">${oferta.precio} (-${oferta.descuento}%)</span><br>
-            <a href="${oferta.url}" target="_blank">Ver oferta</a>
-            <hr>
-          `;
-          contenedor.appendChild(div);
-        });
-      } catch (e) {
-        document.getElementById('general').innerHTML = '<p style="color:red">Error al cargar ofertas</p>';
+          const contenedor = document.getElementById(cat);
+          if (ofertas.length === 0) {
+            contenedor.innerHTML = '<p style="color:red">No hay ofertas aún</p>';
+            continue;
+          }
+
+          let html = ofertas.slice(0, 1).map(o => renderOferta(o)).join('');
+          if (ofertas.length > 1) {
+            html += `
+              <div id="extra-${cat}" style="display:none;">
+                ${ofertas.slice(1).map(o => renderOferta(o)).join('')}
+              </div>
+              <span class="ver-mas" onclick="toggle('${cat}', this)">Ver más</span>
+            `;
+          }
+          contenedor.innerHTML = html;
+        } catch (e) {
+          document.getElementById(cat).innerHTML = '<p style="color:red">Error al cargar productos</p>';
+        }
       }
-
-      document.getElementById('electronica').innerHTML = '<em>Próximamente...</em>';
-      document.getElementById('deportes').innerHTML = '<em>Próximamente...</em>';
     }
+
+    function renderOferta(oferta) {
+      return `
+        <div class='oferta'>
+          <img src="${oferta.imagen || oferta.img}" alt="Imagen" class="img-oferta">
+          <h3>${oferta.titulo}</h3>
+          <p>${oferta.precio} <span class='descuento'>(-${oferta.descuento || 0}%)</span></p>
+          <a href="${oferta.url}" target="_blank">Ver oferta</a>
+        </div>
+      `;
+    }
+
+    function toggle(categoria, el) {
+      const extra = document.getElementById(`extra-${categoria}`);
+      if (extra.style.display === 'none') {
+        extra.style.display = 'block';
+        el.textContent = 'Ver menos';
+      } else {
+        extra.style.display = 'none';
+        el.textContent = 'Ver más';
+      }
+    }
+
     window.onload = cargarOfertas;
   </script>
 </head>
@@ -119,15 +175,15 @@
 
   <div class="sections">
     <div class="card">
-      <h2>Chollos 2025</h2>
+      <h2>Chollos Generales</h2>
       <div id="general">Cargando...</div>
     </div>
     <div class="card">
-      <h2>Chollos Electrónica</h2>
+      <h2>Electrónica</h2>
       <div id="electronica">Cargando...</div>
     </div>
     <div class="card">
-      <h2>Chollos Deportes</h2>
+      <h2>Deportes</h2>
       <div id="deportes">Cargando...</div>
     </div>
   </div>
