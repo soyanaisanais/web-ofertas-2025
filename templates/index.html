@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -60,11 +59,13 @@
       border: 2px solid #000;
       text-shadow: 1px 1px 2px #000;
     }
-    .productos-container {
+    .scroll-area {
+      overflow-y: hidden;
       flex: 1;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      transition: all 0.3s ease;
+    }
+    .scroll-area.expanded {
+      overflow-y: auto;
     }
     .producto {
       margin-bottom: 20px;
@@ -82,16 +83,6 @@
       font-weight: bold;
       display: block;
       text-align: center;
-    }
-    .extra {
-      display: none;
-      overflow-y: auto;
-      flex: 1;
-      max-height: 360px;
-      padding-right: 6px;
-    }
-    .extra.visible {
-      display: block;
     }
     .ver-mas {
       color: #000;
@@ -132,53 +123,38 @@
             contenedor.innerHTML = "<p>Sin productos disponibles</p>";
             continue;
           }
-          const principal = data[0];
-          const extras = data.slice(1, 7);  // solo hasta 6 más
           const ahora = new Date();
           const fechaTexto = ahora.toLocaleDateString('es-ES');
           const horaTexto = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
-          const htmlPrincipal = `
-            <div class="producto">
-              <img src="${principal.imagen}" alt="Producto">
-              <h3>${principal.titulo}</h3>
-              <p><strong>Precio:</strong> ${principal.precio}</p>
-              <p><strong>Descuento:</strong> ${principal.descuento}%</p>
-              <a href="${principal.url}" target="_blank">Comprar Chollo</a>
-            </div>`;
-
-          const htmlExtras = extras.map(oferta => `
+          const productosHTML = data.slice(0, 7).map(oferta => `
             <div class="producto">
               <img src="${oferta.imagen}" alt="Producto">
               <h3>${oferta.titulo}</h3>
               <p><strong>Precio:</strong> ${oferta.precio}</p>
               <p><strong>Descuento:</strong> ${oferta.descuento}%</p>
               <a href="${oferta.url}" target="_blank">Comprar Chollo</a>
+              <div class="actualizado">Actualizado el ${fechaTexto} a las ${horaTexto}</div>
             </div>`).join('');
 
           contenedor.innerHTML = `
-            <div class="productos-container">
-              ${htmlPrincipal}
-              <div class="extra" id="extra-${cat}">
-                ${htmlExtras}
-              </div>
-            </div>
-            <span class="ver-mas" id="boton-${cat}" onclick="toggleExtra('${cat}')">Ver más</span>
-            <div class="actualizado">Actualizado el ${fechaTexto} a las ${horaTexto}</div>`;
+            <div class="scroll-area" id="scroll-${cat}">${productosHTML}</div>
+            <span class="ver-mas" id="boton-${cat}" onclick="toggleScroll('${cat}')">Ver más</span>
+          `;
         } catch (e) {
           document.getElementById(cat).innerHTML = '<p style="color:red">Error al cargar</p>';
         }
       }
     }
 
-    function toggleExtra(cat) {
-      const extra = document.getElementById(`extra-${cat}`);
+    function toggleScroll(cat) {
+      const area = document.getElementById(`scroll-${cat}`);
       const boton = document.getElementById(`boton-${cat}`);
-      if (extra.classList.contains("visible")) {
-        extra.classList.remove("visible");
+      if (area.classList.contains("expanded")) {
+        area.classList.remove("expanded");
         boton.textContent = "Ver más";
       } else {
-        extra.classList.add("visible");
+        area.classList.add("expanded");
         boton.textContent = "Ver menos";
       }
     }
