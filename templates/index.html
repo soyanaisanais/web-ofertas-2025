@@ -76,12 +76,6 @@
       margin: 5px 0;
       color: #222;
     }
-    .oferta small {
-      color: #666;
-      font-size: 0.8em;
-      display: block;
-      margin-top: 5px;
-    }
     .oferta a {
       display: inline-block;
       margin-top: 10px;
@@ -92,17 +86,6 @@
       border-radius: 5px;
       font-weight: bold;
       border: 1px solid #000;
-    }
-    .ver-mas {
-      display: block;
-      margin: 15px auto;
-      padding: 8px 15px;
-      background: #ffd700;
-      color: #000;
-      border: 1px solid #000;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
     }
     .error {
       color: red;
@@ -168,52 +151,65 @@
   </div>
 
   <footer>
-    Actualizado automáticamente - © Chollos 2025
+    Esta es una página de afiliados. No vendemos productos directamente.
   </footer>
 
   <script>
     async function cargarOfertas() {
-      const categorias = ['Chollos_2025', 'electronica', 'deportes'];
+      const categorias = ['general', 'electronica', 'deportes'];
       
       for (const cat of categorias) {
         try {
-          const response = await fetch(`/api/${cat}?nocache=${Date.now()}`);
-          const data = await response.json();
-          
+          const res = await fetch(`/api/${cat}?nocache=${Date.now()}`);
+          const data = await res.json();
           const contenedor = document.getElementById(cat);
           
-          if (!data || data.error || data.length === 0) {
-            contenedor.innerHTML = `<p class="error">${cat === 'deportes' ? 'Próximamente' : 'No hay ofertas'}</p>`;
+          if (!data || data.error) {
+            contenedor.innerHTML = `<p class="error">${
+              cat === 'deportes' ? 'Próximamente' : 
+              data?.error || 'Error cargando'
+            }</p>`;
             continue;
           }
 
-          let html = '';
-          data.forEach((producto, index) => {
-            html += `
-              <div class="oferta">
-                <img src="${producto.imagen}" 
-                     alt="${producto.titulo}"
-                     onerror="this.src='https://via.placeholder.com/300x200?text=Imagen+no+disponible'">
-                <h3>${producto.titulo}</h3>
-                <p><strong>${producto.precio}</strong> ${producto.descuento ? `<span style="color:green">(-${producto.descuento}%)</span>` : ''}</p>
-                <small>Actualizado: ${producto.fecha}</small>
-                <a href="${producto.url}" target="_blank">Ver oferta</a>
-              </div>`;
-          });
+          let html = data.map(item => `
+            <div class="oferta">
+              <img src="${item.imagen}" 
+                   alt="${item.titulo}"
+                   onerror="this.src='https://via.placeholder.com/300x200?text=Imagen+no+disponible'">
+              <h3>${item.titulo}</h3>
+              <p>${item.precio} ${item.descuento ? `<span style="color:green">(-${item.descuento}%)</span>` : ''}</p>
+              <a href="${item.url}" target="_blank" rel="noopener noreferrer">Ver oferta</a>
+            </div>
+          `).join('');
           
           contenedor.innerHTML = html;
-          
         } catch (e) {
           console.error(`Error en ${cat}:`, e);
           document.getElementById(cat).innerHTML = `
-            <p class="error">Error de conexión</p>
-            <button class="ver-mas" onclick="cargarOfertas()">Reintentar</button>`;
+            <p class="error">Error temporal</p>
+            <button onclick="cargarOfertas()">Reintentar</button>`;
         }
       }
     }
 
-    // Actualizar cada 30 segundos
-    window.onload = cargarOfertas;
+    // Iniciar y actualizar cada 30 segundos
+    
+function toggleExtra(categoria) {
+  const extra = document.getElementById(`extra-${categoria}`);
+  const boton = document.getElementById(`boton-${categoria}`);
+  if (extra.style.display === "none") {
+    extra.style.display = "block";
+    boton.textContent = "Ver menos";
+  } else {
+    extra.style.display = "none";
+    boton.textContent = "Ver más";
+  }
+}
+
+setInterval(cargarOfertas, 60000);
+window.onload = cargarOfertas;
+
     setInterval(cargarOfertas, 30000);
   </script>
 </body>
