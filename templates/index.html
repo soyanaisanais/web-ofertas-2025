@@ -69,8 +69,20 @@
       font-size: 1.1em;
       margin: 8px 0;
     }
-    .producto p {
-      margin: 5px 0;
+    .precio-ahora {
+      font-size: 1.2em;
+      color: green;
+      font-weight: bold;
+    }
+    .precio-antes {
+      color: #999;
+      text-decoration: line-through;
+      font-size: 0.9em;
+    }
+    .descuento {
+      font-weight: bold;
+      color: #c00;
+      margin-top: 4px;
     }
     .producto a {
       background:#ffd700;
@@ -168,20 +180,27 @@
           const ahora = new Date();
           const fecha = ahora.toLocaleDateString('es-ES');
           const hora = ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
-          contenedor.innerHTML = data.map((oferta, index) => `
-            <div class="producto ${index > 0 ? 'oculto' : ''}">
-              <div>
-                <img src="${oferta.imagen}" alt="Producto">
-                <h3>${oferta.titulo}</h3>
-                <p><strong>Precio:</strong> ${oferta.precio}</p>
-                <p><strong>Descuento:</strong> ${oferta.descuento}%</p>
-                <a href="${oferta.url}" target="_blank">Comprar Chollo</a>
+          contenedor.innerHTML = data.map((oferta, index) => {
+            const precio_num = parseFloat(oferta.precio_num || oferta.precio || "0");
+            const descuento = parseInt(oferta.descuento || 0);
+            const precio_antes = (precio_num / (1 - descuento / 100)).toFixed(2);
+
+            return `
+              <div class="producto ${index > 0 ? 'oculto' : ''}">
+                <div>
+                  <img src="${oferta.imagen}" alt="Producto">
+                  <h3>${oferta.titulo}</h3>
+                  <p class="precio-ahora">AHORA: ${precio_num.toFixed(2)} €</p>
+                  <p class="precio-antes">Antes: ${precio_antes} €</p>
+                  <p class="descuento">🔻 ¡-${descuento}% de descuento!</p>
+                  <a href="${oferta.url}" target="_blank">Comprar Chollo</a>
+                </div>
+                <div>
+                  <p><em>Actualizado el ${fecha} a las ${hora}</em></p>
+                </div>
               </div>
-              <div>
-                <p><em>Actualizado el ${fecha} a las ${hora}</em></p>
-              </div>
-            </div>
-          `).join('');
+            `;
+          }).join('');
         } catch (e) {
           document.getElementById(cat).innerHTML = "<p>Error al cargar</p>";
         }
