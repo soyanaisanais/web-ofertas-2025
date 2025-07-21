@@ -49,13 +49,7 @@
       align-items: center;
     }
     .scroll-box {
-      max-height: 250px;
-      overflow-y: hidden;
-      transition: max-height 0.4s ease;
-    }
-    .scroll-box.show {
-      max-height: 600px;
-      overflow-y: auto;
+      height: auto;
     }
     .producto {
       border-bottom: 1px solid #ddd;
@@ -111,6 +105,9 @@
       color: #222;
       padding: 20px;
       margin-top: 60px;
+    }
+    .producto.oculto {
+      display: none;
     }
   </style>
 </head>
@@ -169,8 +166,8 @@
           const fecha = ahora.toLocaleDateString('es-ES');
           const hora = ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
 
-          contenedor.innerHTML = data.map(oferta => `
-            <div class="producto">
+          contenedor.innerHTML = data.map((oferta, index) => `
+            <div class="producto ${index > 0 ? 'oculto' : ''}">
               <img src="${oferta.imagen}" alt="Producto">
               <h3>${oferta.titulo}</h3>
               <p><strong>Precio:</strong> ${oferta.precio}</p>
@@ -186,15 +183,18 @@
     }
 
     function toggle(cat) {
-      const box = document.getElementById(`${cat}-box`);
-      const btn = box.nextElementSibling;
+      const productos = document.querySelectorAll(`#${cat} .producto`);
+      const btn = document.querySelector(`#${cat}-box`).nextElementSibling;
+      const ocultos = document.querySelectorAll(`#${cat} .producto.oculto`);
 
-      if (box.classList.contains("show")) {
-        box.classList.remove("show");
-        btn.textContent = "Ver más";
-      } else {
-        box.classList.add("show");
+      if (ocultos.length > 0) {
+        ocultos.forEach(p => p.classList.remove("oculto"));
         btn.textContent = "Ver menos";
+      } else {
+        productos.forEach((p, i) => {
+          if (i > 0) p.classList.add("oculto");
+        });
+        btn.textContent = "Ver más";
       }
     }
 
