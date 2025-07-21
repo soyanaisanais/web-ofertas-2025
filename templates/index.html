@@ -49,7 +49,14 @@
       flex-direction: column;
       align-items: center;
     }
+    .scroll-box {
+      width: 100%;
+    }
     .producto {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      min-height: 360px;
       border-bottom: 1px solid #ddd;
       padding-bottom: 10px;
       margin-bottom: 10px;
@@ -64,14 +71,6 @@
     }
     .producto p {
       margin: 5px 0;
-    }
-    .precio {
-      color: #27ae60;
-      font-weight: bold;
-    }
-    .descuento {
-      color: #c0392b;
-      font-weight: bold;
     }
     .producto a {
       background:#ffd700;
@@ -112,6 +111,9 @@
       padding: 20px;
       margin-top: 60px;
     }
+    .producto.oculto {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -122,18 +124,24 @@
   <div class="sections">
     <div class="card">
       <h2>Chollos 2025</h2>
-      <div id="general">Cargando...</div>
-      <span class="ver-mas" onclick="toggle(this, 'general')">Ver más</span>
+      <div class="scroll-box" id="general-box">
+        <div id="general">Cargando...</div>
+      </div>
+      <span class="ver-mas" onclick="toggle('general')">Ver más</span>
     </div>
     <div class="card">
       <h2>Chollos Electrónica</h2>
-      <div id="electronica">Cargando...</div>
-      <span class="ver-mas" onclick="toggle(this, 'electronica')">Ver más</span>
+      <div class="scroll-box" id="electronica-box">
+        <div id="electronica">Cargando...</div>
+      </div>
+      <span class="ver-mas" onclick="toggle('electronica')">Ver más</span>
     </div>
     <div class="card">
       <h2>Chollos Deportes</h2>
-      <div id="deportes">Cargando...</div>
-      <span class="ver-mas" onclick="toggle(this, 'deportes')">Ver más</span>
+      <div class="scroll-box" id="deportes-box">
+        <div id="deportes">Cargando...</div>
+      </div>
+      <span class="ver-mas" onclick="toggle('deportes')">Ver más</span>
     </div>
   </div>
 
@@ -153,24 +161,25 @@
           const res = await fetch(`/api/${cat}`);
           const data = await res.json();
           const contenedor = document.getElementById(cat);
-
           if (!Array.isArray(data) || data.length === 0) {
             contenedor.innerHTML = "<p>Sin productos disponibles</p>";
             continue;
           }
-
           const ahora = new Date();
           const fecha = ahora.toLocaleDateString('es-ES');
           const hora = ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
-
-          contenedor.innerHTML = data.map(oferta => `
-            <div class="producto">
-              <img src="${oferta.imagen}" alt="Producto">
-              <h3>${oferta.titulo}</h3>
-              <p class="precio">Precio: ${oferta.precio}</p>
-              <p class="descuento">Descuento: ${oferta.descuento}%</p>
-              <a href="${oferta.url}" target="_blank">Comprar Chollo</a>
-              <p><em>Actualizado el ${fecha} a las ${hora}</em></p>
+          contenedor.innerHTML = data.map((oferta, index) => `
+            <div class="producto ${index > 0 ? 'oculto' : ''}">
+              <div>
+                <img src="${oferta.imagen}" alt="Producto">
+                <h3>${oferta.titulo}</h3>
+                <p><strong>Precio:</strong> ${oferta.precio}</p>
+                <p><strong>Descuento:</strong> ${oferta.descuento}%</p>
+                <a href="${oferta.url}" target="_blank">Comprar Chollo</a>
+              </div>
+              <div>
+                <p><em>Actualizado el ${fecha} a las ${hora}</em></p>
+              </div>
             </div>
           `).join('');
         } catch (e) {
@@ -179,15 +188,18 @@
       }
     }
 
-    function toggle(btn, cat) {
-      btn.classList.toggle("activo");
-      const div = document.getElementById(cat);
-      if (btn.classList.contains("activo")) {
+    function toggle(cat) {
+      const productos = document.querySelectorAll(`#${cat} .producto`);
+      const btn = document.querySelector(`#${cat}-box`).nextElementSibling;
+      const ocultos = document.querySelectorAll(`#${cat} .producto.oculto`);
+      if (ocultos.length > 0) {
+        ocultos.forEach(p => p.classList.remove("oculto"));
         btn.textContent = "Ver menos";
-        div.style.maxHeight = "none";
       } else {
+        productos.forEach((p, i) => {
+          if (i > 0) p.classList.add("oculto");
+        });
         btn.textContent = "Ver más";
-        div.scrollIntoView({ behavior: "smooth" });
       }
     }
 
