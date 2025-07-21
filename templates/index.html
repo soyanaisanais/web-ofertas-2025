@@ -151,7 +151,7 @@
       for (let cat of categorias) {
         try {
           const res = await fetch(`/api/${cat}`);
-          const data = await res.json();
+          const data = await res.json(); let ocultar = true;
           const contenedor = document.getElementById(cat);
 
           if (!Array.isArray(data) || data.length === 0) {
@@ -163,12 +163,12 @@
           const fecha = ahora.toLocaleDateString('es-ES');
           const hora = ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
 
-          contenedor.innerHTML = data.map(oferta => `
-            <div class="producto">
+          contenedor.innerHTML = data.map((oferta, i) => `
+            <div class="producto oculto" style="display:none;">
               <img src="${oferta.imagen}" alt="Producto">
               <h3>${oferta.titulo}</h3>
-              <p class="precio">Precio: ${oferta.precio}</p>
-              <p class="descuento">Descuento: ${oferta.descuento}%</p>
+              <p class="precio">Precio: ${oferta.precio} €</p>
+              <p class="descuento">Descuento: ${oferta.descuento}% DTO</p>
               <a href="${oferta.url}" target="_blank">Comprar Chollo</a>
               <p><em>Actualizado el ${fecha} a las ${hora}</em></p>
             </div>
@@ -183,10 +183,10 @@
       btn.classList.toggle("activo");
       const div = document.getElementById(cat);
       if (btn.classList.contains("activo")) {
-        btn.textContent = "Ver menos";
+        btn.textContent = "Ver menos"; div.querySelectorAll(".producto").forEach(p => p.style.display = "block");
         div.style.maxHeight = "none";
       } else {
-        btn.textContent = "Ver más";
+        btn.textContent = "Ver más"; div.querySelectorAll(".producto").forEach((p, i) => p.style.display = i === 0 ? "block" : "none");
         div.scrollIntoView({ behavior: "smooth" });
       }
     }
