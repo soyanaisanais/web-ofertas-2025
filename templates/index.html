@@ -50,16 +50,16 @@
       align-items: center;
     }
     .scroll-box {
+      transition: max-height 0.4s ease;
       width: 100%;
     }
     .producto {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 440px;
       border-bottom: 1px solid #ddd;
       padding-bottom: 10px;
       margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     .producto img {
       width: 100%;
@@ -72,6 +72,24 @@
     .producto p {
       margin: 5px 0;
     }
+    .precio {
+      font-size: 1.1em;
+      color: green;
+      font-weight: bold;
+    }
+    .tachado {
+      color: #888;
+      text-decoration: line-through;
+      font-size: 0.9em;
+    }
+    .descuento {
+      color: red;
+      background: #ffeaea;
+      padding: 3px 6px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-top: 3px;
+    }
     .producto a {
       background:#ffd700;
       color:#000;
@@ -80,7 +98,7 @@
       text-decoration:none;
       font-weight:bold;
       display:inline-block;
-      margin-top: 6px;
+      margin-top: 8px;
     }
     .ver-mas {
       color: #000;
@@ -110,9 +128,6 @@
       color: #222;
       padding: 20px;
       margin-top: 60px;
-    }
-    .producto.oculto {
-      display: none;
     }
   </style>
 </head>
@@ -161,25 +176,25 @@
           const res = await fetch(`/api/${cat}`);
           const data = await res.json();
           const contenedor = document.getElementById(cat);
+
           if (!Array.isArray(data) || data.length === 0) {
             contenedor.innerHTML = "<p>Sin productos disponibles</p>";
             continue;
           }
+
           const ahora = new Date();
           const fecha = ahora.toLocaleDateString('es-ES');
           const hora = ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
-          contenedor.innerHTML = data.map((oferta, index) => `
-            <div class="producto ${index > 0 ? 'oculto' : ''}">
-              <div>
-                <img src="${oferta.imagen}" alt="Producto">
-                <h3>${oferta.titulo}</h3>
-                <p><strong>Precio:</strong> ${oferta.precio}</p>
-                <p><strong>Descuento:</strong> ${oferta.descuento}%</p>
-                <a href="${oferta.url}" target="_blank">Comprar Chollo</a>
-              </div>
-              <div>
-                <p style="margin-top:auto;"><em>Actualizado el ${fecha} a las ${hora}</em></p>
-              </div>
+
+          contenedor.innerHTML = data.map(oferta => `
+            <div class="producto">
+              <img src="${oferta.imagen}" alt="Producto">
+              <h3>${oferta.titulo}</h3>
+              <p class="precio">AHORA: ${oferta.precio}</p>
+              <p class="tachado">Antes: ${(parseFloat(oferta.precio.replace(',', '.')) * 100 / (100 - oferta.descuento)).toFixed(2)} €</p>
+              <p class="descuento">¡-${oferta.descuento}%! 🔻</p>
+              <a href="${oferta.url}" target="_blank">Comprar Chollo</a>
+              <p><em>Actualizado el ${fecha} a las ${hora}</em></p>
             </div>
           `).join('');
         } catch (e) {
@@ -189,16 +204,12 @@
     }
 
     function toggle(cat) {
-      const productos = document.querySelectorAll(`#${cat} .producto`);
-      const btn = document.querySelector(`#${cat}-box`).nextElementSibling;
-      const ocultos = document.querySelectorAll(`#${cat} .producto.oculto`);
-      if (ocultos.length > 0) {
-        ocultos.forEach(p => p.classList.remove("oculto"));
+      const box = document.getElementById(`${cat}-box`);
+      const btn = box.nextElementSibling;
+      box.classList.toggle("show");
+      if (box.classList.contains("show")) {
         btn.textContent = "Ver menos";
       } else {
-        productos.forEach((p, i) => {
-          if (i > 0) p.classList.add("oculto");
-        });
         btn.textContent = "Ver más";
       }
     }
