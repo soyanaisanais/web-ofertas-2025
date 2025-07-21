@@ -44,12 +44,6 @@
       padding: 20px;
       border: 1px solid #ccc;
       color: #111;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .scroll-box {
-      height: auto;
     }
     .producto {
       border-bottom: 1px solid #ddd;
@@ -86,6 +80,8 @@
       margin-top: 12px;
       font-weight: bold;
       cursor: pointer;
+      display: block;
+      text-align: center;
     }
     .qr {
       text-align: center;
@@ -106,9 +102,6 @@
       padding: 20px;
       margin-top: 60px;
     }
-    .producto.oculto {
-      display: none;
-    }
   </style>
 </head>
 <body>
@@ -119,24 +112,15 @@
   <div class="sections">
     <div class="card">
       <h2>Chollos 2025</h2>
-      <div class="scroll-box" id="general-box">
-        <div id="general">Cargando...</div>
-      </div>
-      <span class="ver-mas" onclick="toggle('general')">Ver más</span>
+      <div id="general"></div>
     </div>
     <div class="card">
       <h2>Chollos Electrónica</h2>
-      <div class="scroll-box" id="electronica-box">
-        <div id="electronica">Cargando...</div>
-      </div>
-      <span class="ver-mas" onclick="toggle('electronica')">Ver más</span>
+      <div id="electronica"></div>
     </div>
     <div class="card">
       <h2>Chollos Deportes</h2>
-      <div class="scroll-box" id="deportes-box">
-        <div id="deportes">Cargando...</div>
-      </div>
-      <span class="ver-mas" onclick="toggle('deportes')">Ver más</span>
+      <div id="deportes"></div>
     </div>
   </div>
 
@@ -156,44 +140,57 @@
           const res = await fetch(`/api/${cat}`);
           const data = await res.json();
           const contenedor = document.getElementById(cat);
-
           if (!Array.isArray(data) || data.length === 0) {
             contenedor.innerHTML = "<p>Sin productos disponibles</p>";
             continue;
           }
 
+          const principal = data[0];
+          const extras = data.slice(1);
           const ahora = new Date();
           const fecha = ahora.toLocaleDateString('es-ES');
           const hora = ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
 
-          contenedor.innerHTML = data.map((oferta, index) => `
-            <div class="producto ${index > 0 ? 'oculto' : ''}">
-              <img src="${oferta.imagen}" alt="Producto">
-              <h3>${oferta.titulo}</h3>
-              <p><strong>Precio:</strong> ${oferta.precio}</p>
-              <p><strong>Descuento:</strong> ${oferta.descuento}%</p>
-              <a href="${oferta.url}" target="_blank">Comprar Chollo</a>
+          let html = `
+            <div class="producto">
+              <img src="${principal.imagen}" alt="Producto">
+              <h3>${principal.titulo}</h3>
+              <p><strong>Precio:</strong> ${principal.precio}</p>
+              <p><strong>Descuento:</strong> ${principal.descuento}%</p>
+              <a href="${principal.url}" target="_blank">Comprar Chollo</a>
               <p><em>Actualizado el ${fecha} a las ${hora}</em></p>
             </div>
-          `).join('');
+          `;
+
+          if (extras.length > 0) {
+            html += `<div class="extra" id="extra-${cat}" style="display:none;">` + extras.map(oferta => `
+              <div class="producto">
+                <img src="${oferta.imagen}" alt="Producto">
+                <h3>${oferta.titulo}</h3>
+                <p><strong>Precio:</strong> ${oferta.precio}</p>
+                <p><strong>Descuento:</strong> ${oferta.descuento}%</p>
+                <a href="${oferta.url}" target="_blank">Comprar Chollo</a>
+              </div>
+            `).join('') + `</div>
+            <span class="ver-mas" onclick="toggleExtra('${cat}')">Ver más</span>`;
+          }
+
+          contenedor.innerHTML = html;
+
         } catch (e) {
           document.getElementById(cat).innerHTML = "<p>Error al cargar</p>";
         }
       }
     }
 
-    function toggle(cat) {
-      const productos = document.querySelectorAll(`#${cat} .producto`);
-      const btn = document.querySelector(`#${cat}-box`).nextElementSibling;
-      const ocultos = document.querySelectorAll(`#${cat} .producto.oculto`);
-
-      if (ocultos.length > 0) {
-        ocultos.forEach(p => p.classList.remove("oculto"));
+    function toggleExtra(cat) {
+      const extra = document.getElementById(`extra-${cat}`);
+      const btn = extra.nextElementSibling;
+      if (extra.style.display === "none") {
+        extra.style.display = "block";
         btn.textContent = "Ver menos";
       } else {
-        productos.forEach((p, i) => {
-          if (i > 0) p.classList.add("oculto");
-        });
+        extra.style.display = "none";
         btn.textContent = "Ver más";
       }
     }
