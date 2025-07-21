@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chollos 2025</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -41,48 +41,46 @@
       border-radius: 12px;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
       width: 320px;
-      height: 750px;
-      padding: 25px;
+      padding: 20px;
       border: 1px solid #ccc;
       color: #111;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      align-items: center;
     }
-    .card h2 {
-      font-size: 1.4em;
-      color: #000;
-      background: #ffd700;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-      border: 2px solid #000;
-      text-shadow: 1px 1px 2px #000;
-    }
-    .scroll-area {
+    .scroll-box {
+      max-height: 600px;
       overflow-y: hidden;
-      flex: 1;
-      transition: all 0.3s ease;
+      transition: max-height 0.4s ease;
     }
-    .scroll-area.expanded {
+    .scroll-box.show {
       overflow-y: auto;
     }
     .producto {
-      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
     }
     .producto img {
       width: 100%;
       border-radius: 8px;
     }
+    .producto h3 {
+      font-size: 1.1em;
+      margin: 8px 0;
+    }
+    .producto p {
+      margin: 5px 0;
+    }
     .producto a {
-      background: #ffd700;
-      color: #000;
-      padding: 8px 12px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-      display: block;
-      text-align: center;
+      background:#ffd700;
+      color:#000;
+      padding:8px 12px;
+      border-radius:6px;
+      text-decoration:none;
+      font-weight:bold;
+      display:inline-block;
+      margin-top: 6px;
     }
     .ver-mas {
       color: #000;
@@ -90,17 +88,20 @@
       border: 2px solid #aaa;
       padding: 6px 12px;
       border-radius: 8px;
+      margin-top: 12px;
       font-weight: bold;
       cursor: pointer;
-      text-align: center;
-      display: inline-block;
-      margin: auto;
     }
-    .actualizado {
+    .qr {
       text-align: center;
-      font-size: 0.75em;
-      margin-top: 10px;
-      color: #666;
+      margin: 40px auto;
+    }
+    .qr img {
+      width: 170px;
+      border-radius: 12px;
+      background: #fff;
+      padding: 8px;
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
     }
     footer {
       background: #ccc;
@@ -111,6 +112,44 @@
       margin-top: 60px;
     }
   </style>
+</head>
+<body>
+  <header>
+    <h1 class="title-3d">Chollos 2025</h1>
+  </header>
+
+  <div class="sections">
+    <div class="card">
+      <h2>Chollos 2025</h2>
+      <div class="scroll-box" id="general-box">
+        <div id="general">Cargando...</div>
+      </div>
+      <span class="ver-mas" onclick="toggle('general')">Ver más</span>
+    </div>
+    <div class="card">
+      <h2>Chollos Electrónica</h2>
+      <div class="scroll-box" id="electronica-box">
+        <div id="electronica">Cargando...</div>
+      </div>
+      <span class="ver-mas" onclick="toggle('electronica')">Ver más</span>
+    </div>
+    <div class="card">
+      <h2>Chollos Deportes</h2>
+      <div class="scroll-box" id="deportes-box">
+        <div id="deportes">Cargando...</div>
+      </div>
+      <span class="ver-mas" onclick="toggle('deportes')">Ver más</span>
+    </div>
+  </div>
+
+  <div class="qr">
+    <img src="/static/canal_qr.png" alt="QR del canal de Telegram">
+  </div>
+
+  <footer>
+    Esta es una página de afiliados. No vendemos productos directamente. Las ofertas y ventas pertenecen a terceros. No nos hacemos responsables del contenido, calidad o cumplimiento de las condiciones por parte de los vendedores.
+  </footer>
+
   <script>
     async function cargarOfertas() {
       const categorias = ['general', 'electronica', 'deportes'];
@@ -119,59 +158,46 @@
           const res = await fetch(`/api/${cat}`);
           const data = await res.json();
           const contenedor = document.getElementById(cat);
+
           if (!Array.isArray(data) || data.length === 0) {
             contenedor.innerHTML = "<p>Sin productos disponibles</p>";
             continue;
           }
-          const ahora = new Date();
-          const fechaTexto = ahora.toLocaleDateString('es-ES');
-          const horaTexto = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
-          const productosHTML = data.slice(0, 7).map(oferta => `
+          const ahora = new Date();
+          const fecha = ahora.toLocaleDateString('es-ES');
+          const hora = ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
+
+          contenedor.innerHTML = data.map(oferta => `
             <div class="producto">
               <img src="${oferta.imagen}" alt="Producto">
               <h3>${oferta.titulo}</h3>
               <p><strong>Precio:</strong> ${oferta.precio}</p>
               <p><strong>Descuento:</strong> ${oferta.descuento}%</p>
               <a href="${oferta.url}" target="_blank">Comprar Chollo</a>
-              <div class="actualizado">Actualizado el ${fechaTexto} a las ${horaTexto}</div>
-            </div>`).join('');
-
-          contenedor.innerHTML = `
-            <div class="scroll-area" id="scroll-${cat}">${productosHTML}</div>
-            <span class="ver-mas" id="boton-${cat}" onclick="toggleScroll('${cat}')">Ver más</span>
-          `;
+              <p><em>Actualizado el ${fecha} a las ${hora}</em></p>
+            </div>
+          `).join('');
         } catch (e) {
-          document.getElementById(cat).innerHTML = '<p style="color:red">Error al cargar</p>';
+          document.getElementById(cat).innerHTML = "<p>Error al cargar</p>";
         }
       }
     }
 
-    function toggleScroll(cat) {
-      const area = document.getElementById(`scroll-${cat}`);
-      const boton = document.getElementById(`boton-${cat}`);
-      if (area.classList.contains("expanded")) {
-        area.classList.remove("expanded");
-        boton.textContent = "Ver más";
+    function toggle(cat) {
+      const box = document.getElementById(`${cat}-box`);
+      const btn = box.nextElementSibling;
+      box.classList.toggle("show");
+      if (box.classList.contains("show")) {
+        box.style.maxHeight = "600px";
+        btn.textContent = "Ver menos";
       } else {
-        area.classList.add("expanded");
-        boton.textContent = "Ver menos";
+        box.style.maxHeight = "250px";
+        btn.textContent = "Ver más";
       }
     }
 
     window.onload = cargarOfertas;
-    setInterval(cargarOfertas, 60000);
   </script>
-</head>
-<body>
-  <header><h1 class="title-3d">Chollos 2025</h1></header>
-  <div class="sections">
-    <div class="card"><h2>Chollos 2025</h2><div id="general">Cargando...</div></div>
-    <div class="card"><h2>Chollos Electrónica</h2><div id="electronica">Cargando...</div></div>
-    <div class="card"><h2>Chollos Deportes</h2><div id="deportes">Cargando...</div></div>
-  </div>
-  <footer>
-    Esta es una página de afiliados. No vendemos productos directamente. Las ofertas y ventas pertenecen a terceros. No nos hacemos responsables del contenido, calidad o cumplimiento de las condiciones por parte de los vendedores.
-  </footer>
 </body>
 </html>
