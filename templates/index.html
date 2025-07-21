@@ -42,7 +42,7 @@
       border-radius: 12px;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
       width: 320px;
-      min-height: 750px;
+      height: 750px;
       padding: 25px;
       border: 1px solid #ccc;
       color: #111;
@@ -62,7 +62,9 @@
     }
     .productos-container {
       flex: 1;
-      overflow-y: hidden;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
     .producto {
       margin-bottom: 20px;
@@ -81,6 +83,14 @@
       display: block;
       text-align: center;
     }
+    .extra {
+      overflow-y: auto;
+      display: none;
+      flex: 1;
+    }
+    .extra.visible {
+      display: block;
+    }
     .ver-mas {
       color: #000;
       background-color: #eee;
@@ -91,18 +101,13 @@
       cursor: pointer;
       text-align: center;
       display: inline-block;
-      margin: 0 auto;
+      margin: auto;
     }
     .actualizado {
       text-align: center;
       font-size: 0.75em;
       margin-top: 10px;
       color: #666;
-    }
-    .extra {
-      display: none;
-      overflow-y: auto;
-      max-height: 300px;
     }
     footer {
       background: #ccc;
@@ -126,7 +131,7 @@
             continue;
           }
           const principal = data[0];
-          const extras = data.slice(1);
+          const extras = data.slice(1, 7);  // solo hasta 6 más
           const ahora = new Date();
           const fechaTexto = ahora.toLocaleDateString('es-ES');
           const horaTexto = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
@@ -167,12 +172,12 @@
     function toggleExtra(cat) {
       const extra = document.getElementById(`extra-${cat}`);
       const boton = document.getElementById(`boton-${cat}`);
-      if (extra.style.display === "none" || !extra.style.display) {
-        extra.style.display = "block";
-        boton.textContent = "Ver menos";
-      } else {
-        extra.style.display = "none";
+      if (extra.classList.contains("visible")) {
+        extra.classList.remove("visible");
         boton.textContent = "Ver más";
+      } else {
+        extra.classList.add("visible");
+        boton.textContent = "Ver menos";
       }
     }
 
