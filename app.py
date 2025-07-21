@@ -49,9 +49,9 @@ def obtener_ofertas(coleccion):
         print(f"Error en {coleccion}: {str(e)}")
         return jsonify({'error': 'Datos no disponibles'}), 500
 
-@app.route('/api/general')
-def general():
-    return obtener_ofertas("Ultimas_Ofertas")
+@app.route('/api/Chollos_2025')  # ← Ruta modificada
+def chollos_2025():
+    return obtener_ofertas("Ultimas_Ofertas")  # Nombre real en MongoDB
 
 @app.route('/api/electronica')
 def electronica():
