@@ -31,18 +31,18 @@
     }
     .sections {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
       gap: 25px;
       padding: 40px 20px;
       background-color: #eee;
+      flex-wrap: wrap;
     }
     .card {
       background: #f9f9f9;
       border-radius: 12px;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
       width: 320px;
-      height: 750px;
+      min-height: 750px;
       padding: 25px;
       border: 1px solid #ccc;
       color: #111;
@@ -62,8 +62,7 @@
     }
     .productos-container {
       flex: 1;
-      overflow-y: auto;
-      margin-bottom: 12px;
+      overflow-y: hidden;
     }
     .producto {
       margin-bottom: 20px;
@@ -92,7 +91,7 @@
       cursor: pointer;
       text-align: center;
       display: inline-block;
-      margin: auto;
+      margin: 0 auto;
     }
     .actualizado {
       text-align: center;
@@ -102,6 +101,8 @@
     }
     .extra {
       display: none;
+      overflow-y: auto;
+      max-height: 300px;
     }
     footer {
       background: #ccc;
@@ -151,7 +152,9 @@
           contenedor.innerHTML = `
             <div class="productos-container">
               ${htmlPrincipal}
-              <div class="extra" id="extra-${cat}">${htmlExtras}</div>
+              <div class="extra" id="extra-${cat}">
+                ${htmlExtras}
+              </div>
             </div>
             <span class="ver-mas" id="boton-${cat}" onclick="toggleExtra('${cat}')">Ver más</span>
             <div class="actualizado">Actualizado el ${fechaTexto} a las ${horaTexto}</div>`;
