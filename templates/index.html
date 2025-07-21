@@ -46,8 +46,7 @@
       color: #111;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      align-items: stretch;
+      justify-content: space-between;
       min-height: 600px;
     }
     .card h2 {
@@ -60,10 +59,27 @@
       border: 2px solid #000;
       text-shadow: 1px 1px 2px #000;
     }
-    .card p {
+    .producto {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: space-between;
+    }
+    .producto h3 {
       font-size: 1em;
       text-align: center;
-      margin-top: 15px;
+      min-height: 60px;
+    }
+    .producto a.boton {
+      background:#ffd700;
+      color:#000;
+      padding:8px 12px;
+      border-radius:6px;
+      text-decoration:none;
+      font-weight:bold;
+      display:inline-block;
+      text-align: center;
+      margin-top: auto;
     }
     .ver-mas {
       color: #000;
@@ -75,6 +91,7 @@
       margin-top: 12px;
       font-weight: bold;
       cursor: pointer;
+      transition: all 0.3s ease;
       text-align: center;
     }
     .ver-mas:hover {
@@ -86,6 +103,12 @@
       font-size: 0.95em;
       margin-top: 12px;
     }
+    .fecha-actualizacion {
+      font-size: 0.75em;
+      text-align: center;
+      margin-top: 10px;
+      color: #666;
+    }
     .qr {
       text-align: center;
       margin: 40px auto;
@@ -96,12 +119,6 @@
       background: #fff;
       padding: 8px;
       box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
-    }
-    .fecha-actualizacion {
-      margin-top: 12px;
-      font-size: 0.8em;
-      text-align: center;
-      color: #666;
     }
     footer {
       background: #ccc;
@@ -115,15 +132,10 @@
   <script>
     async function cargarOfertas() {
       const categorias = ['general', 'electronica', 'deportes'];
-      const ahora = new Date();
-      const fechaTexto = ahora.toLocaleDateString('es-ES');
-      const horaTexto = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-
       for (let cat of categorias) {
         try {
           const res = await fetch(`/api/${cat}`);
           const data = await res.json();
-
           const contenedor = document.getElementById(cat);
 
           if (!Array.isArray(data) || data.length === 0) {
@@ -133,6 +145,9 @@
 
           const principal = data[0];
           const extras = data.slice(1);
+          const ahora = new Date();
+          const fechaTexto = ahora.toLocaleDateString('es-ES');
+          const horaTexto = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
           const htmlPrincipal = `
             <div class="producto">
@@ -140,7 +155,7 @@
               <h3>${principal.titulo}</h3>
               <p><strong>Precio:</strong> ${principal.precio}</p>
               <p><strong>Descuento:</strong> ${principal.descuento}%</p>
-              <a href="${principal.url}" target="_blank" style="background:#ffd700;color:#000;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;">Comprar Chollo</a>
+              <a href="${principal.url}" target="_blank" class="boton">Comprar Chollo</a>
             </div>
           `;
 
@@ -150,7 +165,7 @@
               <h3>${oferta.titulo}</h3>
               <p><strong>Precio:</strong> ${oferta.precio}</p>
               <p><strong>Descuento:</strong> ${oferta.descuento}%</p>
-              <a href="${oferta.url}" target="_blank" style="background:#ffd700;color:#000;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;">Comprar Chollo</a>
+              <a href="${oferta.url}" target="_blank" class="boton">Comprar Chollo</a>
             </div>
           `).join('');
 
