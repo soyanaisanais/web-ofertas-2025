@@ -49,17 +49,10 @@
       flex-direction: column;
       align-items: center;
     }
-    .scroll-box {
-      transition: max-height 0.4s ease;
-      width: 100%;
-    }
     .producto {
       border-bottom: 1px solid #ddd;
       padding-bottom: 10px;
       margin-bottom: 10px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
     }
     .producto img {
       width: 100%;
@@ -73,22 +66,12 @@
       margin: 5px 0;
     }
     .precio {
-      font-size: 1.1em;
-      color: green;
+      color: #27ae60;
       font-weight: bold;
     }
-    .tachado {
-      color: #888;
-      text-decoration: line-through;
-      font-size: 0.9em;
-    }
     .descuento {
-      color: red;
-      background: #ffeaea;
-      padding: 3px 6px;
-      border-radius: 6px;
-      display: inline-block;
-      margin-top: 3px;
+      color: #c0392b;
+      font-weight: bold;
     }
     .producto a {
       background:#ffd700;
@@ -98,7 +81,7 @@
       text-decoration:none;
       font-weight:bold;
       display:inline-block;
-      margin-top: 8px;
+      margin-top: 6px;
     }
     .ver-mas {
       color: #000;
@@ -139,24 +122,18 @@
   <div class="sections">
     <div class="card">
       <h2>Chollos 2025</h2>
-      <div class="scroll-box" id="general-box">
-        <div id="general">Cargando...</div>
-      </div>
-      <span class="ver-mas" onclick="toggle('general')">Ver más</span>
+      <div id="general">Cargando...</div>
+      <span class="ver-mas" onclick="toggle(this, 'general')">Ver más</span>
     </div>
     <div class="card">
       <h2>Chollos Electrónica</h2>
-      <div class="scroll-box" id="electronica-box">
-        <div id="electronica">Cargando...</div>
-      </div>
-      <span class="ver-mas" onclick="toggle('electronica')">Ver más</span>
+      <div id="electronica">Cargando...</div>
+      <span class="ver-mas" onclick="toggle(this, 'electronica')">Ver más</span>
     </div>
     <div class="card">
       <h2>Chollos Deportes</h2>
-      <div class="scroll-box" id="deportes-box">
-        <div id="deportes">Cargando...</div>
-      </div>
-      <span class="ver-mas" onclick="toggle('deportes')">Ver más</span>
+      <div id="deportes">Cargando...</div>
+      <span class="ver-mas" onclick="toggle(this, 'deportes')">Ver más</span>
     </div>
   </div>
 
@@ -190,9 +167,8 @@
             <div class="producto">
               <img src="${oferta.imagen}" alt="Producto">
               <h3>${oferta.titulo}</h3>
-              <p class="precio">AHORA: ${oferta.precio}</p>
-              <p class="tachado">Antes: ${(parseFloat(oferta.precio.replace(',', '.')) * 100 / (100 - oferta.descuento)).toFixed(2)} €</p>
-              <p class="descuento">¡-${oferta.descuento}%! 🔻</p>
+              <p class="precio">Precio: ${oferta.precio}</p>
+              <p class="descuento">Descuento: ${oferta.descuento}%</p>
               <a href="${oferta.url}" target="_blank">Comprar Chollo</a>
               <p><em>Actualizado el ${fecha} a las ${hora}</em></p>
             </div>
@@ -203,14 +179,15 @@
       }
     }
 
-    function toggle(cat) {
-      const box = document.getElementById(`${cat}-box`);
-      const btn = box.nextElementSibling;
-      box.classList.toggle("show");
-      if (box.classList.contains("show")) {
+    function toggle(btn, cat) {
+      btn.classList.toggle("activo");
+      const div = document.getElementById(cat);
+      if (btn.classList.contains("activo")) {
         btn.textContent = "Ver menos";
+        div.style.maxHeight = "none";
       } else {
         btn.textContent = "Ver más";
+        div.scrollIntoView({ behavior: "smooth" });
       }
     }
 
