@@ -49,8 +49,6 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      overflow: hidden;
-      position: relative;
     }
     .card h2 {
       font-size: 1.4em;
@@ -65,7 +63,7 @@
     .productos-container {
       flex: 1;
       overflow-y: auto;
-      margin-top: 15px;
+      margin-bottom: 12px;
     }
     .producto {
       margin-bottom: 20px;
@@ -93,8 +91,8 @@
       font-weight: bold;
       cursor: pointer;
       text-align: center;
-      margin: 8px auto 0;
       display: inline-block;
+      margin: auto;
     }
     .actualizado {
       text-align: center;
@@ -153,9 +151,7 @@
           contenedor.innerHTML = `
             <div class="productos-container">
               ${htmlPrincipal}
-              <div class="extra" id="extra-${cat}">
-                ${htmlExtras}
-              </div>
+              <div class="extra" id="extra-${cat}">${htmlExtras}</div>
             </div>
             <span class="ver-mas" id="boton-${cat}" onclick="toggleExtra('${cat}')">Ver más</span>
             <div class="actualizado">Actualizado el ${fechaTexto} a las ${horaTexto}</div>`;
