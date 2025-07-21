@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -51,14 +50,6 @@
       align-items: stretch;
       min-height: 600px;
     }
-      background: #f9f9f9;
-      border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-      width: 320px;
-      padding: 25px;
-      border: 1px solid #ccc;
-      color: #111;
-    }
     .card h2 {
       font-size: 1.4em;
       color: #000;
@@ -84,26 +75,11 @@
       margin-top: 12px;
       font-weight: bold;
       cursor: pointer;
-      transition: all 0.3s ease;
+      text-align: center;
     }
     .ver-mas:hover {
       background-color: #000;
       color: #ffd700;
-    }
-      color: #ffd700;
-      background-color: #eee;
-      border: 2px solid #aaa;
-      padding: 6px 12px;
-      border-radius: 8px;
-      display: inline-block;
-      margin-top: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .ver-mas:hover {
-      background-color: #ffd700;
-      color: #111;
     }
     .extra {
       display: none;
@@ -121,6 +97,12 @@
       padding: 8px;
       box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
     }
+    .fecha-actualizacion {
+      margin-top: 12px;
+      font-size: 0.8em;
+      text-align: center;
+      color: #666;
+    }
     footer {
       background: #ccc;
       text-align: center;
@@ -133,6 +115,10 @@
   <script>
     async function cargarOfertas() {
       const categorias = ['general', 'electronica', 'deportes'];
+      const ahora = new Date();
+      const fechaTexto = ahora.toLocaleDateString('es-ES');
+      const horaTexto = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
       for (let cat of categorias) {
         try {
           const res = await fetch(`/api/${cat}`);
@@ -168,16 +154,13 @@
             </div>
           `).join('');
 
-          const ahora = new Date();
-        const fechaTexto = ahora.toLocaleDateString('es-ES');
-        const horaTexto = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-
-        contenedor.innerHTML = `
+          contenedor.innerHTML = `
             ${htmlPrincipal}
             <div class="extra" id="extra-${cat}">
               ${htmlExtras}
             </div>
             <span class="ver-mas" id="boton-${cat}" onclick="toggleExtra('${cat}')">Ver más</span>
+            <div class="fecha-actualizacion">Actualizado el ${fechaTexto} a las ${horaTexto}</div>
           `;
         } catch (e) {
           document.getElementById(cat).innerHTML = '<p style="color:red">Error al cargar</p>';
