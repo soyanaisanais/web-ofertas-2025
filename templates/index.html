@@ -1,12 +1,13 @@
 
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chollos 2025</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chollos 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&amp;family=Poppins:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<style>
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
@@ -114,6 +115,23 @@
       background: #fff;
       padding: 8px;
       box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+    }
+    .qr-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .qr-overlay img {
+      width: 50%;
+      max-width: 600px;
+      border-radius: 20px;
+      border: 5px solid white;
     }
     footer {
       background: #ccc;
@@ -129,43 +147,56 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1 class="title-3d">Chollos 2025</h1>
-  </header>
+<header>
+<h1 class="title-3d">Chollos 2025</h1>
+</header>
+<div class="sections">
+<div class="card">
+<h2>Chollos 2025</h2>
+<div class="scroll-box" id="general-box">
+<div id="general">Cargando...</div>
+</div>
+<span class="ver-mas" onclick="toggle('general')">Ver más</span>
+</div>
+<div class="card">
+<h2>Chollos Electrónica</h2>
+<div class="scroll-box" id="electronica-box">
+<div id="electronica">Cargando...</div>
+</div>
+<span class="ver-mas" onclick="toggle('electronica')">Ver más</span>
+</div>
+<div class="card">
+<h2>Chollos Deportes</h2>
+<div class="scroll-box" id="deportes-box">
+<div id="deportes">Cargando...</div>
+</div>
+<span class="ver-mas" onclick="toggle('deportes')">Ver más</span>
+</div>
+</div>
+<div class="qr">
+<img alt="QR del canal de Telegram" id="qr-img" onclick="document.getElementById('qrZoom').style.display='flex'" src="/static/canal_qr.png"/>
+</div>
+<div class="qr-overlay" id="qrZoom" onclick="this.style.display='none'">
+<img alt="QR ampliado" src="/static/canal_qr.png"/>
+</div>
+<footer>
+<!-- Contador de visitas real desde contadorvisitasgratis.com -->
+<div style="text-align:center; margin-top:20px;">
+<div id="sfacnxc9kba9fkxja9b984jwzst6bw86ts8"></div>
+<script async="" src="https://counter1.optistats.ovh/private/counter.js?c=acnxc9kba9fkxja9b984jwzst6bw86ts8&amp;down=async" type="text/javascript"></script>
+<noscript>
+<a href="https://www.contadorvisitasgratis.com" title="contadores de visitas gratis">
+<img alt="contadores de visitas gratis" border="0" src="https://counter1.optistats.ovh/private/contadorvisitasgratis.php?c=acnxc9kba9fkxja9b984jwzst6bw86ts8" title="contadores de visitas gratis"/>
+</a>
+</noscript>
+</div>
 
-  <div class="sections">
-    <div class="card">
-      <h2>Chollos 2025</h2>
-      <div class="scroll-box" id="general-box">
-        <div id="general">Cargando...</div>
-      </div>
-      <span class="ver-mas" onclick="toggle('general')">Ver más</span>
-    </div>
-    <div class="card">
-      <h2>Chollos Electrónica</h2>
-      <div class="scroll-box" id="electronica-box">
-        <div id="electronica">Cargando...</div>
-      </div>
-      <span class="ver-mas" onclick="toggle('electronica')">Ver más</span>
-    </div>
-    <div class="card">
-      <h2>Chollos Deportes</h2>
-      <div class="scroll-box" id="deportes-box">
-        <div id="deportes">Cargando...</div>
-      </div>
-      <span class="ver-mas" onclick="toggle('deportes')">Ver más</span>
-    </div>
-  </div>
+<div>
 
-  <div class="qr">
-    <img src="/static/canal_qr.png" alt="QR del canal de Telegram">
-  </div>
-
-  <footer>
+</div>
     Esta es una página de afiliados. No vendemos productos directamente. Las ofertas y ventas pertenecen a terceros. No nos hacemos responsables del contenido, calidad o cumplimiento de las condiciones por parte de los vendedores.
   </footer>
-
-  <script>
+<script>
     async function cargarOfertas() {
       const categorias = ['general', 'electronica', 'deportes'];
       for (let cat of categorias) {
@@ -184,7 +215,6 @@
             const precio_num = parseFloat(oferta.precio_num || oferta.precio || "0");
             const descuento = parseInt(oferta.descuento || 0);
             const precio_antes = (precio_num / (1 - descuento / 100)).toFixed(2);
-
             return `
               <div class="producto ${index > 0 ? 'oculto' : ''}">
                 <div>
