@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chollos 2025</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&amp;family=Poppins:wght@400;700&amp;display=swap" rel="stylesheet"/>
   <style>
@@ -78,27 +78,37 @@
       }
     }
     .sections {
-      display: flex;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 25px;
       padding: 40px 20px;
       background-color: #eee;
-      flex-wrap: wrap;
+      max-width: 1400px;
+      margin: 0 auto;
     }
     .card {
       background: #f9f9f9;
       border-radius: 12px;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-      width: 320px;
       padding: 20px;
       border: 1px solid #ccc;
       color: #111;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      height: 100%;
+    }
+    /* Bordes de colores para cada categoría */
+    .card:nth-child(1) {
+      border-top: 4px solid #ff0000; /* Rojo para Chollos 2025 */
+    }
+    .card:nth-child(2) {
+      border-top: 4px solid #0066ff; /* Azul para Electrónica */
+    }
+    .card:nth-child(3) {
+      border-top: 4px solid #00aa00; /* Verde para Deportes */
     }
     .card:nth-child(4) {
-      border-top: 4px solid #ff69b4; /* Color rosa para Moda */
+      border-top: 4px solid #ff69b4; /* Rosa para Moda */
     }
     .scroll-box {
       width: 100%;
@@ -107,53 +117,64 @@
       display: flex;
       flex-direction: column;
       flex-grow: 1;
-      min-height: 360px;
+      min-height: 420px;
       border-bottom: 1px solid #ddd;
       padding-bottom: 10px;
       margin-bottom: 10px;
     }
     .producto img {
       width: 100%;
+      height: 220px;
+      object-fit: contain;
       border-radius: 8px;
+      background: #fff;
+      margin-bottom: 10px;
     }
     .producto h3 {
       font-size: 1.1em;
       margin: 8px 0;
+      min-height: 40px;
     }
     .precio-ahora {
       font-size: 1.2em;
       color: green;
       font-weight: bold;
+      margin: 5px 0;
     }
     .precio-antes {
       color: #999;
       text-decoration: line-through;
       font-size: 0.9em;
+      margin: 5px 0;
     }
     .descuento {
       font-weight: bold;
       color: #c00;
-      margin-top: 4px;
+      margin: 5px 0;
     }
     .producto a {
-      background:#ffd700;
-      color:#000;
-      padding:8px 12px;
-      border-radius:6px;
-      text-decoration:none;
-      font-weight:bold;
-      display:inline-block;
-      margin-top: 6px;
+      background: #ffd700;
+      color: #000;
+      padding: 10px 15px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: auto;
+      align-self: center;
+      width: 80%;
+      text-align: center;
     }
     .ver-mas {
       color: #000;
       background-color: #eee;
       border: 2px solid #aaa;
-      padding: 6px 12px;
+      padding: 8px 15px;
       border-radius: 8px;
-      margin-top: 12px;
+      margin-top: 15px;
       font-weight: bold;
       cursor: pointer;
+      align-self: center;
     }
     .qr {
       text-align: center;
@@ -212,31 +233,38 @@
   </header>
 
   <div class="sections">
+    <!-- Chollos 2025 (Rojo) -->
     <div class="card">
       <h2>Chollos 2025</h2>
       <div class="scroll-box" id="general-box">
-        <div id="general">Cargando...</div>
+        <div id="general">Cargando ofertas generales...</div>
       </div>
       <span class="ver-mas" onclick="toggle('general')">Ver más</span>
     </div>
+
+    <!-- Electrónica (Azul) -->
     <div class="card">
       <h2>Chollos Electrónica</h2>
       <div class="scroll-box" id="electronica-box">
-        <div id="electronica">Cargando...</div>
+        <div id="electronica">Cargando electrónica...</div>
       </div>
       <span class="ver-mas" onclick="toggle('electronica')">Ver más</span>
     </div>
+
+    <!-- Deportes (Verde) -->
     <div class="card">
       <h2>Chollos Deportes</h2>
       <div class="scroll-box" id="deportes-box">
-        <div id="deportes">Cargando...</div>
+        <div id="deportes">Cargando deportes...</div>
       </div>
       <span class="ver-mas" onclick="toggle('deportes')">Ver más</span>
     </div>
+
+    <!-- Moda (Rosa) -->
     <div class="card">
       <h2>Chollos Moda</h2>
       <div class="scroll-box" id="moda-box">
-        <div id="moda">Cargando...</div>
+        <div id="moda">Cargando moda...</div>
       </div>
       <span class="ver-mas" onclick="toggle('moda')">Ver más</span>
     </div>
@@ -244,12 +272,6 @@
 
   <div class="qr">
     <img alt="QR del canal de Telegram" id="qr-img" onclick="document.getElementById('qrZoom').style.display='flex'" src="/static/canal_qr.png"/>
-  </div>
-
-  <div style="text-align:center; margin-top:20px;">
-    <a href="http://www.freevisitorcounters.com">on Freevisitorcounters.com</a>
-    <script src="https://www.freevisitorcounters.com/auth.php?id=8e441c2274617a58ab071b7cc5885d0730e3188b" type="text/javascript"></script>
-    <script src="https://freevisitorcounters.com/en/home/counter/1368235/t/5" type="text/javascript"></script>
   </div>
 
   <div class="qr-overlay" id="qrZoom" onclick="this.style.display='none'">
@@ -266,50 +288,42 @@
   </footer>
 
   <script>
-    async function cargarOfertas() {
-      const categorias = ['general', 'electronica', 'deportes', 'moda'];
-      for (let cat of categorias) {
-        try {
-          const res = await fetch(`/api/${cat}`);
-          const data = await res.json();
-          const contenedor = document.getElementById(cat);
-          if (!Array.isArray(data) || data.length === 0) {
-            contenedor.innerHTML = "<p>Sin productos disponibles</p>";
-            continue;
-          }
-          const ahora = new Date();
-          const fecha = ahora.toLocaleDateString('es-ES');
-          const hora = ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
-          contenedor.innerHTML = data.map((oferta, index) => {
-            const precio_num = parseFloat(oferta.precio || oferta.precio_num || "0");
-            const descuento = parseInt(oferta.descuento || 0);
-            const precio_antes = (precio_num / (1 - descuento / 100)).toFixed(2);
-            return `
-              <div class="producto ${index > 0 ? 'oculto' : ''}">
-                <div>
-                  <img src="${oferta.img || oferta.imagen}" alt="Producto">
-                  <h3>${oferta.titulo}</h3>
-                  <p class="precio-ahora">AHORA: ${precio_num.toFixed(2)} €</p>
-                  <p class="precio-antes">Antes: ${precio_antes} €</p>
-                  <p class="descuento">🔻 ¡-${descuento}% de descuento!</p>
-                  <a href="${oferta.url}" target="_blank">Comprar Chollo</a>
-                </div>
-                <div>
-                  <p><em>Actualizado el ${fecha} a las ${hora}</em></p>
-                </div>
-              </div>
-            `;
-          }).join('');
-        } catch (e) {
-          document.getElementById(cat).innerHTML = "<p>Error al cargar</p>";
-        }
+    // Función para cargar ofertas de moda desde MongoDB
+    async function cargarModa() {
+      try {
+        const response = await fetch('/api/moda');
+        const productos = await response.json();
+        
+        let html = '';
+        productos.forEach(producto => {
+          const precioAnterior = (producto.precio / (1 - producto.descuento/100)).toFixed(2);
+          
+          html += `
+            <div class="producto">
+              <img src="${producto.img}" alt="${producto.titulo}">
+              <h3>${producto.titulo}</h3>
+              <p class="precio-ahora">AHORA: ${producto.precio.toFixed(2)} €</p>
+              <p class="precio-antes">Antes: ${precioAnterior} €</p>
+              <p class="descuento">🔻 ¡-${producto.descuento}% de descuento!</p>
+              <a href="${producto.url}" target="_blank">Comprar Chollo</a>
+              <small>${new Date(producto.fecha).toLocaleString('es-ES')}</small>
+            </div>
+          `;
+        });
+        
+        document.getElementById('moda').innerHTML = html || '<p>No hay ofertas de moda recientes</p>';
+      } catch (error) {
+        document.getElementById('moda').innerHTML = '<p>Error cargando ofertas de moda</p>';
+        console.error('Error:', error);
       }
     }
 
+    // Función para alternar productos
     function toggle(cat) {
       const productos = document.querySelectorAll(`#${cat} .producto`);
       const btn = document.querySelector(`#${cat}-box`).nextElementSibling;
       const ocultos = document.querySelectorAll(`#${cat} .producto.oculto`);
+      
       if (ocultos.length > 0) {
         ocultos.forEach(p => p.classList.remove("oculto"));
         btn.textContent = "Ver menos";
@@ -321,7 +335,11 @@
       }
     }
 
-    window.onload = cargarOfertas;
+    // Cargar moda al iniciar
+    window.addEventListener('DOMContentLoaded', () => {
+      cargarModa();
+      // Puedes añadir aquí las demás funciones de carga para las otras categorías
+    });
   </script>
 </body>
 </html>
