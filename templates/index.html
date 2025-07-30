@@ -14,10 +14,10 @@
     }
     header {
       background-color: #000;
-      padding: 30px 20px 40px; /* Más padding abajo para móvil */
+      padding: 30px 20px 40px;
       text-align: center;
       position: relative;
-      overflow: hidden; /* Fija la caja dentro del header */
+      overflow: hidden;
     }
     .title-3d {
       font-family: 'Orbitron', sans-serif;
@@ -63,7 +63,7 @@
     }
     @media (min-width: 768px) {
       header {
-        padding: 50px 20px 30px; /* Padding original en desktop */
+        padding: 50px 20px 30px;
       }
       .title-3d {
         font-size: 3.5em;
@@ -96,6 +96,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+    .card:nth-child(4) {
+      border-top: 4px solid #ff69b4; /* Color rosa para Moda */
     }
     .scroll-box {
       width: 100%;
@@ -204,6 +207,7 @@
       <a href="https://t.me/Chollosamazonbruja" target="_blank">@Chollosamazonbruja</a>
       <a href="https://t.me/supercholloselectronica2025" target="_blank">@supercholloselectronica2025</a>
       <a href="https://t.me/chollosdeportes2025" target="_blank">@chollosdeportes2025</a>
+      <a href="https://t.me/superchollosmoda2025" target="_blank">@superchollosmoda2025</a>
     </div>
   </header>
 
@@ -229,11 +233,19 @@
       </div>
       <span class="ver-mas" onclick="toggle('deportes')">Ver más</span>
     </div>
+    <div class="card">
+      <h2>Chollos Moda</h2>
+      <div class="scroll-box" id="moda-box">
+        <div id="moda">Cargando...</div>
+      </div>
+      <span class="ver-mas" onclick="toggle('moda')">Ver más</span>
+    </div>
   </div>
+
   <div class="qr">
     <img alt="QR del canal de Telegram" id="qr-img" onclick="document.getElementById('qrZoom').style.display='flex'" src="/static/canal_qr.png"/>
   </div>
-  <!-- Contador de visitas -->
+
   <div style="text-align:center; margin-top:20px;">
     <a href="http://www.freevisitorcounters.com">on Freevisitorcounters.com</a>
     <script src="https://www.freevisitorcounters.com/auth.php?id=8e441c2274617a58ab071b7cc5885d0730e3188b" type="text/javascript"></script>
@@ -243,6 +255,7 @@
   <div class="qr-overlay" id="qrZoom" onclick="this.style.display='none'">
     <img alt="QR ampliado" src="/static/canal_qr.png"/>
   </div>
+
   <footer>
     <div>
       <a href="https://www.cutercounter.com/" target="_blank">
@@ -251,9 +264,10 @@
     </div>
     Esta es una página de afiliados. No vendemos productos directamente. Las ofertas y ventas pertenecen a terceros. No nos hacemos responsables del contenido, calidad o cumplimiento de las condiciones por parte de los vendedores.
   </footer>
+
   <script>
     async function cargarOfertas() {
-      const categorias = ['general', 'electronica', 'deportes'];
+      const categorias = ['general', 'electronica', 'deportes', 'moda'];
       for (let cat of categorias) {
         try {
           const res = await fetch(`/api/${cat}`);
@@ -267,13 +281,13 @@
           const fecha = ahora.toLocaleDateString('es-ES');
           const hora = ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
           contenedor.innerHTML = data.map((oferta, index) => {
-            const precio_num = parseFloat(oferta.precio_num || oferta.precio || "0");
+            const precio_num = parseFloat(oferta.precio || oferta.precio_num || "0");
             const descuento = parseInt(oferta.descuento || 0);
             const precio_antes = (precio_num / (1 - descuento / 100)).toFixed(2);
             return `
               <div class="producto ${index > 0 ? 'oculto' : ''}">
                 <div>
-                  <img src="${oferta.imagen}" alt="Producto">
+                  <img src="${oferta.img || oferta.imagen}" alt="Producto">
                   <h3>${oferta.titulo}</h3>
                   <p class="precio-ahora">AHORA: ${precio_num.toFixed(2)} €</p>
                   <p class="precio-antes">Antes: ${precio_antes} €</p>
