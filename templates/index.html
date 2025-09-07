@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -321,7 +320,7 @@
                 <p class="precio-ahora">AHORA: ${precio.toFixed(2)} €</p>
                 ${precioAnterior ? `<p class="precio-antes">Antes: ${precioAnterior} €</p>` : ''}
                 ${descuento ? `<p class="descuento">🔻 ¡-${descuento}% de descuento!</p>` : ''}
-                <a href="${producto.url || '#'}" target="_blank">Comprar Chollo</a>
+                <a href="${producto.URL || producto.url || '#'}" target="_blank">Comprar Chollo</a>
                 <small>${producto.fecha ? new Date(producto.fecha).toLocaleString('es-ES') : ''}</small>
               </div>
             `;
@@ -361,23 +360,3 @@
 </body>
 </html>
 
-
-# Backend (Flask)
-from flask import Flask, jsonify
-from flask_cors import CORS
-from pymongo import MongoClient
-
-app = Flask(__name__)
-CORS(app)
-
-client = MongoClient("mongodb+srv://usuario:password@servidor")
-db = client["Chollos_2025"]
-
-@app.route("/api/moda", methods=["GET"])
-def obtener_moda():
-    coleccion = db["chollos_moda"]
-    datos = list(coleccion.find({}, {"_id": 0}))
-    return jsonify(datos)
-
-if __name__ == "__main__":
-    app.run(debug=True)
