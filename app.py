@@ -7,7 +7,7 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder='static')
 CORS(app)
 
-# Conexión a MongoDB (con tus credenciales reales)
+# Conexión a MongoDB con tus credenciales reales
 MONGO_URI = "mongodb+srv://soyanaisanais:Eduardo1981@cluster0.yaamkjc.mongodb.net/Chollos_2025?retryWrites=true&w=majority"
 client = MongoClient(MONGO_URI)
 db = client["Chollos_2025"]
@@ -23,11 +23,9 @@ def static_files(filename):
 def get_ofertas(collection_name, horas=24000):
     """
     Obtiene ofertas de la colección indicada.
-    Cambiado: horas=24000 (≈1000 días) para no dejar la respuesta vacía si los datos no son recientes.
-    También: compatibilidad de claves URL/imagen/fecha y tipos numéricos.
+    Usamos 24000 horas (≈1000 días) para que salgan resultados aunque no sean recientes.
     """
     try:
-        # Búsqueda con ventana amplia de tiempo (evita quedarse sin resultados si no hay datos recientes)
         desde = datetime.now() - timedelta(hours=horas)
         ofertas_cursor = db[collection_name].find({
             "fecha": {"$gte": desde}
@@ -56,12 +54,11 @@ def get_ofertas(collection_name, horas=24000):
             # URL: admite 'URL' (mayúsculas) o 'url' (minúsculas)
             url = oferta.get("URL", oferta.get("url", "#")) or "#"
 
-            # Fecha: si es datetime, se formatea; si no, se deja en str
+            # Fecha: formatea si es datetime
             fecha_val = oferta.get("fecha", datetime.now())
             if isinstance(fecha_val, datetime):
                 fecha_str = fecha_val.strftime("%Y-%m-%d %H:%M:%S")
             else:
-                # deja string legible
                 fecha_str = str(fecha_val)
 
             resultado.append({
@@ -79,6 +76,7 @@ def get_ofertas(collection_name, horas=24000):
         print(f"Error en {collection_name}: {str(e)}")
         return []
 
+# Rutas de la API
 @app.route('/api/general')
 def api_general():
     return jsonify(get_ofertas("Ultimas_Ofertas"))
@@ -93,10 +91,8 @@ def api_deportes():
 
 @app.route('/api/moda')
 def api_moda():
-    # Lee de la colección exacta 'chollos_moda' (como en tu captura)
     return jsonify(get_ofertas("chollos_moda"))
 
 if __name__ == '__main__':
-    # Render suele establecer el puerto vía env var PORT; si no existe, usamos 10000 como en tu código
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
