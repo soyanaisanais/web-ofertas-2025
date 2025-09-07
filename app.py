@@ -7,7 +7,7 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder='static')
 CORS(app)
 
-# Conexión a MongoDB (usa tus credenciales)
+# Conexión a MongoDB (con tus credenciales reales)
 MONGO_URI = "mongodb+srv://soyanaisanais:Eduardo1981@cluster0.yaamkjc.mongodb.net/Chollos_2025?retryWrites=true&w=majority"
 client = MongoClient(MONGO_URI)
 db = client["Chollos_2025"]
@@ -20,33 +20,59 @@ def home():
 def static_files(filename):
     return send_from_directory(app.static_folder, filename)
 
-def get_ofertas(collection_name, horas=24):
+def get_ofertas(collection_name, horas=24000):
+    """
+    Obtiene ofertas de la colección indicada.
+    Cambiado: horas=24000 (≈1000 días) para no dejar la respuesta vacía si los datos no son recientes.
+    También: compatibilidad de claves URL/imagen/fecha y tipos numéricos.
+    """
     try:
-        # Busca en las últimas X horas (24 por defecto)
-        ofertas = list(db[collection_name].find({
-            "fecha": {"$gte": datetime.now() - timedelta(hours=horas)}
-        }).sort("fecha", -1).limit(10))
-        
+        # Búsqueda con ventana amplia de tiempo (evita quedarse sin resultados si no hay datos recientes)
+        desde = datetime.now() - timedelta(hours=horas)
+        ofertas_cursor = db[collection_name].find({
+            "fecha": {"$gte": desde}
+        }).sort("fecha", -1).limit(10)
+
+        ofertas = list(ofertas_cursor)
         resultado = []
         for oferta in ofertas:
-            # Compatibilidad con campos de imagen alternativos
+            # Imagen: admite 'imagen' o 'img'
             imagen = oferta.get("imagen") or oferta.get("img") or ""
-            if not imagen.startswith(('http://', 'https://')):
+            if not isinstance(imagen, str) or not imagen.startswith(('http://', 'https://')):
                 imagen = "https://via.placeholder.com/300x200?text=Sin+imagen"
-            
-            # Asegura formato numérico para precios y descuentos
-            precio_num = float(oferta.get("precio_num", oferta.get("precio", 0)))
-            descuento = int(oferta.get("descuento", 0))
-            
+
+            # Precio: intenta 'precio_num' o 'precio'
+            try:
+                precio_num = float(oferta.get("precio_num", oferta.get("precio", 0)) or 0)
+            except Exception:
+                precio_num = 0.0
+
+            # Descuento: asegura entero
+            try:
+                descuento = int(oferta.get("descuento", 0) or 0)
+            except Exception:
+                descuento = 0
+
+            # URL: admite 'URL' (mayúsculas) o 'url' (minúsculas)
+            url = oferta.get("URL", oferta.get("url", "#")) or "#"
+
+            # Fecha: si es datetime, se formatea; si no, se deja en str
+            fecha_val = oferta.get("fecha", datetime.now())
+            if isinstance(fecha_val, datetime):
+                fecha_str = fecha_val.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                # deja string legible
+                fecha_str = str(fecha_val)
+
             resultado.append({
                 "id": str(oferta.get("_id")),
                 "titulo": oferta.get("titulo", "Producto sin título"),
                 "precio": precio_num,
                 "precio_mostrar": f"{precio_num:.2f} €",
                 "descuento": descuento,
-                "url": oferta.get("url", "#"),
+                "url": url,
                 "imagen": imagen,
-                "fecha": oferta.get("fecha", datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
+                "fecha": fecha_str
             })
         return resultado
     except Exception as e:
@@ -67,7 +93,10 @@ def api_deportes():
 
 @app.route('/api/moda')
 def api_moda():
+    # Lee de la colección exacta 'chollos_moda' (como en tu captura)
     return jsonify(get_ofertas("chollos_moda"))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+    # Render suele establecer el puerto vía env var PORT; si no existe, usamos 10000 como en tu código
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
